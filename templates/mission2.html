@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #2 - Analyse Forensique</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        /* Styles de base similaires à mission1.html */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        /* Styles spécifiques pour la mission forensics */
+        .terminal {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 20px;
+            font-family: 'Source Code Pro', monospace;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .terminal::before {
+            content: '> Analyse en cours...';
+            color: #00ff00;
+            display: block;
+            margin-bottom: 10px;
+            animation: blink 1s infinite;
+        }
+
+        .file-info {
+            background: #1a1a1a;
+            padding: 15px;
+            border-left: 3px solid #00ff00;
+            margin: 10px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .download-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #006600;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #008800;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #2a2a2a;
+            border-left: 3px solid #00ff00;
+        }
+
+        /* Styles pour le formulaire de réponse */
+        .submit-form {
+            margin-top: 30px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            background: #006600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #008800;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="mission-header">
+            <h1>Mission #2: Analyse Forensique</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Suite à la perquisition effectuée au domicile du suspect, nous avons récupéré son disque dur. Notre équipe technique a extrait un fichier qui pourrait contenir des informations cruciales.</p>
+            <p>Votre mission : analyser ce fichier et trouver le mot de passe qui y est caché.</p>
+        </div>
+
+        <div class="download-section">
+            <h3>📥 Fichier Récupéré</h3>
+            <p>Fichier extrait du disque dur du suspect :</p>
+            <a href="https://www.swisstransfer.com/d/aa371d47-9e9d-41be-b481-b9c27de02298" class="download-btn" target="_blank">Télécharger le fichier</a>
+        </div>
+
+        <div class="terminal">
+            <div class="file-info">
+                Type de fichier : Fichier crypté
+                <br>
+                Taille : À déterminer
+                <br>
+                Hash SHA-256 : À calculer
+            </div>
+        </div>
+
+
+        <form class="submit-form" method="POST">
+            <input type="text" name="password" class="input-field" placeholder="Entrez le mot de passe trouvé..." required>
+            <button type="submit" class="submit-btn">Soumettre le mot de passe</button>
+        </form>
+    </div>
+</body>
+</html>
