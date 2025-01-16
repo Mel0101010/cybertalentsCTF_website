@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #1 - Localisation du Suspect</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .evidence-box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+
+        .evidence-item {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .photo-evidence {
+            margin: 20px 0;
+            background: #1a1a1a;
+            padding: 15px;
+            border: 1px solid #444;
+        }
+
+        .photo-caption {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .hint {
+            color: #999;
+            font-style: italic;
+            margin: 15px 0;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Special Elite', cursive;
+        }
+
+        .submit-btn {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .tools-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(40, 40, 40, 0.9);
+        }
+
+        .tool-link {
+            color: #cc0000;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .tool-link:hover {
+            color: #ff0000;
+            text-decoration: underline;
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .time-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .urgent {
+            color: #ff0000;
+            animation: blink 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="time-info">Temps restant: <span class="urgent">47:59</span></div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="mission-header">
+            <h1>Mission #1: Localisation du Suspect</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Agent, nous avons intercepté des informations concernant notre suspect. Un témoin a aperçu son véhicule, une Citroën C4 Grand Picasso grise dont la plaque d'immatriculation commence par <strong>MZ</strong>.</p>
+            <p>Votre mission est de localiser l'adresse associée à ce véhicule en utilisant les ressources à votre disposition.</p>
+        </div>
+
+        <div class="evidence-box">
+            <h3>🔍 Indices Disponibles:</h3>
+            <div class="evidence-item">
+                - Début de plaque d'immatriculation: MZ
+            </div>
+            <div class="evidence-item">
+                - Véhicule: Citroën C4 Grand Picasso gris
+            </div>
+            <div class="photo-evidence">
+                <h4>📸 Photo de surveillance:</h4>
+                <img src="{{ url_for('static', filename='images/plaque.jpg') }}" alt="Véhicule suspect" style="max-width: 100%; margin: 10px 0; border: 2px solid #444; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                <div class="photo-caption">
+                    Photo du véhicule suspect prise par une caméra de surveillance
+                </div>
+            </div>
+        </div>
+
+        <div class="tools-section">
+            <h3>🛠️ Outils d'Investigation:</h3>
+            <p>Utilisez le site <a href="https://evaluer-chauffeur.fr/" target="_blank" class="tool-link">evaluer-chauffeur.fr</a> pour votre recherche.</p>
+        </div>
+
+        <div class="hint">
+            💡 Conseil: Effectuez une recherche méticuleuse sur le site indiqué en utilisant les caractères de la plaque.
+        </div>
+
+        <form class="submit-form" method="POST">
+            <input type="text" name="adresse" class="input-field" placeholder="Entrez l'adresse trouvée..." required>
+            <button type="submit" class="submit-btn">Soumettre l'adresse</button>
+        </form>
+    </div>
+</body>
+</html>
