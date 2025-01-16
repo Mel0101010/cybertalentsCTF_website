@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquête Criminelle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .case-file {
+            background: rgba(20, 20, 20, 0.95);
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .confidential-stamp {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #cc0000;
+            color: white;
+            padding: 5px 15px;
+            transform: rotate(15deg);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .case-description {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-list li {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(40, 40, 40, 0.9);
+            border-left: 3px solid #666;
+            transition: all 0.3s ease;
+        }
+
+        .evidence-list li:hover {
+            border-left-color: #cc0000;
+            transform: translateX(10px);
+        }
+
+        .start-investigation {
+            background: #cc0000;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.2em;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .start-investigation:hover {
+            background: #990000;
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+            text-decoration: none;
+        }
+
+        .police-tape {
+            background: repeating-linear-gradient(
+                45deg,
+                #f8d000,
+                #f8d000 10px,
+                #000000 10px,
+                #000000 20px
+            );
+            height: 30px;
+            width: 100%;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="case-file">
+        <div class="confidential-stamp">CONFIDENTIEL</div>
+        <h1>Dossier d'Enquête #2025-137</h1>
+
+        <div class="case-description">
+            <p>Un dangereux criminel est en liberté dans la ville. Les indices suggèrent qu'il prépare son prochain coup. Le temps presse, nous avons besoin de vos compétences d'investigation pour le retrouver avant qu'il ne frappe à nouveau.</p>
+        </div>
+
+        <div class="police-tape"></div>
+
+        <h2>Éléments à votre disposition :</h2>
+        <ul class="evidence-list">
+            <li>📁 Dossiers de police et rapports d'enquête</li>
+            <li>🖼️ Images de surveillance</li>
+            <li>💻 Données numériques récupérées</li>
+            <li>🗺️ Cartes des dernières localisations connues</li>
+            <li>📱 Registres d'appels téléphoniques</li>
+        </ul>
+
+        <a href="{{ url_for('mission1') }}" class="start-investigation">COMMENCER L'ENQUÊTE</a>
+    </div>
+</body>
+</html>
