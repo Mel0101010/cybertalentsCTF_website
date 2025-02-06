@@ -33,9 +33,17 @@ def mission2():
             flash('Mot de passe incorrect. Essayez encore.', 'error')
     return render_template('mission2.html')
 
-
-
-
+@app.route('/mission3', methods=['GET', 'POST'])
+def mission3():
+    if request.method == 'POST':
+        flag = request.form.get('flag')
+        if flag == "http://192.168.1.2":
+            flash('Félicitations! Flag correct - Accès aux conversations obtenu.', 'success')
+            return redirect(url_for('mission4'))  # Redirection vers la mission suivante
+        else:
+            flash('Flag incorrect. Essayez encore.', 'error')
+    return render_template('mission3.html')
+  
 
 @app.route('/mission4', methods=['GET', 'POST'])
 def mission4():
@@ -47,6 +55,8 @@ def mission4():
         else:
             flash('Nom de fichier incorrect. Continuez votre recherche.', 'error')
     return render_template('mission4.html', success=False)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
