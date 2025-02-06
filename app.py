@@ -32,5 +32,21 @@ def mission2():
         else:
             flash('Mot de passe incorrect. Essayez encore.', 'error')
     return render_template('mission2.html')
+
+
+
+
+
+@app.route('/mission4', methods=['GET', 'POST'])
+def mission4():
+    if request.method == 'POST':
+        flag = request.form.get('flag')
+        if flag.lower() == "random.pyc":
+            flash('Félicitations! Vous avez trouvé le fichier binaire correct.', 'success')
+            return redirect(url_for('mission5'))  # Redirection vers mission5
+        else:
+            flash('Nom de fichier incorrect. Continuez votre recherche.', 'error')
+    return render_template('mission4.html', success=False)
+
 if __name__ == '__main__':
     app.run(debug=True)
