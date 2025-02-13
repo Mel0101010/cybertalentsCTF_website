@@ -56,7 +56,16 @@ def mission4():
             flash('Nom de fichier incorrect. Continuez votre recherche.', 'error')
     return render_template('mission4.html', success=False)
 
-
+@app.route('/mission5', methods=['GET', 'POST'])
+def mission5():
+    if request.method == 'POST':
+        flag = request.form.get('flag')
+        if flag.upper() == "FLAG{RANDOMAM}":
+            flash('Félicitations! Vous avez trouvé le flag correct et terminé l\'investigation!', 'success')
+            return redirect(url_for('victory'))  # Page de victoire finale
+        else:
+            flash('Flag incorrect. Continuez votre analyse.', 'error')
+    return render_template('mission5.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
