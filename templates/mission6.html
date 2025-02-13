@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #6 - Analyse Réseau</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .download-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #006600;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #008800;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .tool-info {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #00ff00;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .hint-box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ffff00;
+        }
+
+        .flag-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #6: Analyse Réseau</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Agent, notre équipe a intercepté des communications suspectes sur le réseau utilisé par le suspect. Une capture réseau a été effectuée et nous avons besoin de votre expertise pour analyser le trafic et identifier le fichier utilisé dans la communication.</p>
+            <p>Le fichier que nous recherchons pourrait contenir des informations cruciales sur la prochaine cible du suspect.</p>
+        </div>
+
+        <div class="download-section">
+            <h3>📥 Fichier à Analyser</h3>
+            <p>Capture réseau au format PCAP :</p>
+            <a href="https://www.swisstransfer.com/d/capture-reseau" class="download-btn" target="_blank">Télécharger capture.pcap</a>
+        </div>
+
+        <div class="tool-info">
+            <h3>🛠️ Outils Recommandés</h3>
+            <p>- Wireshark pour l'analyse du trafic réseau</p>
+            <p>- Tshark pour l'analyse en ligne de commande</p>
+        </div>
+
+        <div class="hint-box">
+            <h3>💡 Indices</h3>
+            <p>- Concentrez-vous sur les protocoles HTTP et FTP</p>
+            <p>- Recherchez des transferts de fichiers suspects</p>
+            <p>- Examinez les en-têtes des paquets pour des informations sur les fichiers</p>
+        </div>
+
+        <div class="flag-form">
+            <h3>🚩 Validation</h3>
+            <p>Entrez le nom du fichier trouvé dans la capture réseau :</p>
+            <form method="POST">
+                <input type="text" name="filename" class="input-field" placeholder="nom_du_fichier.extension" required>
+                <button type="submit" class="submit-btn">Valider</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

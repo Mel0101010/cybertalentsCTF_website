@@ -67,5 +67,30 @@ def mission5():
             flash('Flag incorrect. Continuez votre analyse.', 'error')
     return render_template('mission5.html')
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/mission6', methods=['GET', 'POST'])
+def mission6():
+    if request.method == 'POST':
+        filename = request.form.get('filename')
+        if filename.lower() == "server.py":  # Le nom du fichier à trouver
+            flash('Félicitations! Vous avez identifié le bon fichier dans la capture réseau.', 'success')
+            return redirect(url_for('victory'))  # Redirection vers la page de victoire
+        else:
+            flash('Nom de fichier incorrect. Continuez votre analyse.', 'error')
+    return render_template('mission6.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
