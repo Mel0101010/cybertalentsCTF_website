@@ -78,6 +78,17 @@ def mission6():
             flash('Nom de fichier incorrect. Continuez votre analyse.', 'error')
     return render_template('mission6.html')
 
+@app.route('/mission7', methods=['GET', 'POST'])
+def mission7():
+    if request.method == 'POST':
+        secret_key = request.form.get('secret_key')
+        if secret_key == "Cr4ck3d!":  # La clé secrète à trouver
+            flash('Félicitations! Vous avez découvert la clé secrète!', 'success')
+            return redirect(url_for('mission8'))  # Redirection vers mission6
+        else:
+            flash('Clé incorrecte. Continuez vos recherches.', 'error')
+    return render_template('mission7.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

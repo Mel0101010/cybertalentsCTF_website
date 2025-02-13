@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #7 - Cryptographie</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .server-info {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #00ff00;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-box {
+            background: #0a0a0a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #333;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-content {
+            color: #00ff00;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .hint-box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ffff00;
+        }
+
+        .important-note {
+            background: #440000;
+            color: #fff;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ff0000;
+        }
+
+        .flag-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .analysis-section {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #7: Cryptanalyse</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Agent, nous avons récupéré le code source du serveur cryptographique utilisé par le suspect. L'analyse préliminaire révèle qu'il s'agit d'un système de chiffrement personnalisé avec une faiblesse potentielle.</p>
+            <p>Votre mission est d'analyser le code, d'identifier la vulnérabilité et d'effectuer une attaque par force brute pour récupérer la clé de chiffrement.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>🖥️ Informations Serveur</h3>
+            <p>Serveur: 127.0.0.1:5000</p>
+            <p>Protocole: HTTP</p>
+        </div>
+
+
+        <div class="analysis-section">
+            <h3>🔍 Points d'Analyse</h3>
+            <ul>
+                <li>Le serveur utilise un algorithme de chiffrement par substitution</li>
+                <li>La clé secrète fait exactement 8 caractères</li>
+                <li>Le message de test est connu: "TestMessage123"</li>
+                <li>La vulnérabilité réside dans la comparaison des résultats chiffrés</li>
+            </ul>
+        </div>
+
+        <div class="hint-box">
+            <h3>💡 Indices</h3>
+            <p>- L'algorithme de chiffrement est vulnérable aux attaques par force brute</p>
+            <p>- La clé est composée uniquement de caractères ASCII imprimables</p>
+        </div>
+
+
+
+        <div class="flag-form">
+            <h3>🚩 Validation</h3>
+            <p>Entrez la clé secrète découverte :</p>
+            <form method="POST">
+                <input type="text" name="secret_key" class="input-field" placeholder="XXXXXXXX" required pattern=".{8,8}" title="La clé doit faire exactement 8 caractères">
+                <button type="submit" class="submit-btn">Valider la clé</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
