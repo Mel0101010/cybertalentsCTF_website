@@ -61,24 +61,11 @@ def mission5():
     if request.method == 'POST':
         flag = request.form.get('flag')
         if flag.upper() == "FLAG{RANDOMAM}":
-            flash('Félicitations! Vous avez trouvé le flag correct et terminé l\'investigation!', 'success')
-            return redirect(url_for('victory'))  # Page de victoire finale
+            flash('Félicitations! Vous avez trouvé le flag correct!', 'success')
+            return redirect(url_for('mission6'))  # Redirection vers mission6
         else:
             flash('Flag incorrect. Continuez votre analyse.', 'error')
     return render_template('mission5.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @app.route('/mission6', methods=['GET', 'POST'])
 def mission6():
