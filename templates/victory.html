@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victoire - Enquête Criminelle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            width: 100%;
+            background: rgba(20, 20, 20, 0.9);
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            color: #cc0000;
+            font-size: 1.5em;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #e0e0e0;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #cc0000;
+        }
+
+        .victory-container {
+            background: rgba(20, 20, 20, 0.95);
+            max-width: 800px;
+            width: 90%;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            text-align: center;
+        }
+
+        .victory-title {
+            color: #cc0000;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .solved-stamp {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            transform: rotate(15deg);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: 1.5em;
+        }
+
+        .congrats-text {
+            font-size: 1.5em;
+            margin: 30px 0;
+            line-height: 1.5;
+        }
+
+        .score-info {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 30px 0;
+            display: inline-block;
+            border: 1px solid #444;
+        }
+
+        .score-value {
+            font-size: 3em;
+            color: #cc0000;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .badge-container {
+            margin: 30px 0;
+        }
+
+        .badge {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .action-buttons {
+            margin: 30px 0;
+        }
+
+        .action-btn {
+            background: #cc0000;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.2em;
+            margin: 10px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="navbar-brand">CTF Enquête Criminelle</a>
+        <div class="navbar-links">
+            <a href="{{ url_for('scoreboard') }}" class="nav-link">Tableau des Scores</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="victory-container">
+        <div class="solved-stamp">AFFAIRE RÉSOLUE</div>
+        <h1 class="victory-title">Mission Accomplie!</h1>
+
+        <p class="congrats-text">
+            Félicitations Agent {{ current_user.username }}!<br>
+            Vous avez brillamment résolu toutes les missions de cette enquête criminelle.<br>
+            Votre contribution à la sécurité publique est inestimable.
+        </p>
+
+        <div class="score-info">
+            <p>Score final</p>
+            <div class="score-value">{{ current_user.total_points }} Points</div>
+            <p>7/7 Missions Complétées</p>
+        </div>
+
+        <div class="badge-container">
+            <div class="badge">Insigne d'Excellence en Investigation</div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('scoreboard') }}" class="action-btn">Voir le Classement</a>
+            <a href="{{ url_for('home') }}" class="action-btn">Retour au QG</a>
+        </div>
+    </div>
+
+    <script>
+        // Animation de confettis pour célébrer
+        function createConfetti() {
+            const colors = ['#cc0000', '#ffffff', '#f8d000', '#00cc00', '#0066cc'];
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+
+                // Position aléatoire
+                const left = Math.random() * 100;
+
+                // Style aléatoire
+                confetti.style.left = `${left}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+
+                // Animation aléatoire
+                const duration = Math.random() * 3 + 2;
+                confetti.style.animation = `confetti-fall ${duration}s linear forwards`;
+
+                // Ajout au DOM
+                document.body.appendChild(confetti);
+
+                // Suppression après l'animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration * 1000);
+            }
+        }
+
+        // Lancer l'animation au chargement
+        window.addEventListener('load', createConfetti);
+
+        // Répéter toutes les 5 secondes
+        setInterval(createConfetti, 5000);
+    </script>
+</body>
+</html>
