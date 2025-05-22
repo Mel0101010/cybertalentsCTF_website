@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #9 - Compression de Données</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .compression-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .compression-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .compression-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .compression-explanation li {
+            margin: 10px 0;
+        }
+
+        .compression-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .compression-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .compression-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .compression-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .compression-table th, .compression-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .compression-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .compression-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .compression-visual {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            text-align: center;
+        }
+
+        .compression-visual h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .compression-visual pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #9: Compression de Données</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui compresse et décompresse des données. Le serveur vous enverra des données à compresser ou à décompresser selon un algorithme spécifique.</p>
+            <p>Votre programme devra implémenter l'algorithme de compression Run-Length Encoding (RLE) et gérer efficacement les données binaires.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9009</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="compression-explanation">
+            <h3>📝 Qu'est-ce que la compression RLE ?</h3>
+            <p>Run-Length Encoding (RLE) est une méthode de compression de données simple qui remplace les séquences répétées par une paire (compte, valeur).</p>
+            <p>Par exemple :</p>
+            <ul>
+                <li>"AAAA" devient "4A"</li>
+                <li>"BBBBBB" devient "6B"</li>
+                <li>"AABBBCC" devient "2A3B2C"</li>
+            </ul>
+            <p>Cette méthode est efficace pour les données contenant beaucoup de répétitions.</p>
+        </div>
+
+        <div class="compression-visual">
+            <h3>🔤 Visualisation de la Compression</h3>
+            <pre>
+Texte original :    A A A A B B B B B B C C
+Compression RLE :   4 A 6 B 2 C
+                    ↓
+Format binaire :    00000100 01000001 00000110 01000010 00000010 01000011
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "COMPRESS: AAAAABBBCC"
+Client  : "5A3B2C"
+Serveur : "Correct! Voici le flag: COMPRESSION_DONE"
+
+Serveur : "DECOMPRESS: 3X4Y2Z"
+Client  : "XXXYYYYZZ"
+Serveur : "Correct! Voici le flag: COMPRESSION_DONE"
+
+Serveur : "COMPRESS_BINARY: 0000000000000000"
+Client  : "16:0"
+Serveur : "Correct! Voici le flag: COMPRESSION_DONE"
+            </pre>
+        </div>
+
+        <table class="compression-table">
+            <tr>
+                <th>Type de Données</th>
+                <th>Exemple Original</th>
+                <th>Exemple Compressé</th>
+                <th>Taux de Compression</th>
+            </tr>
+            <tr>
+                <td>Texte Répétitif</td>
+                <td>AAAAABBBCC</td>
+                <td>5A3B2C</td>
+                <td>60%</td>
+            </tr>
+            <tr>
+                <td>Données Binaires</td>
+                <td>0000000000</td>
+                <td>10:0</td>
+                <td>80%</td>
+            </tr>
+            <tr>
+                <td>Texte Mixte</td>
+                <td>AABBBCCCC</td>
+                <td>2A3B4C</td>
+                <td>67%</td>
+            </tr>
+            <tr>
+                <td>Données Alternées</td>
+                <td>0101010101</td>
+                <td>1:0 1:1 1:0 1:1 1:0 1:1 1:0 1:1 1:0 1:1</td>
+                <td>0%</td>
+            </tr>
+            <tr>
+                <td>Texte Unique</td>
+                <td>ABCDEF</td>
+                <td>1A1B1C1D1E1F</td>
+                <td>-100%</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+
+def compress_rle(text):
+    if not text:
+        return ""
+    
+    result = []
+    count = 1
+    current = text[0]
+    
+    for char in text[1:]:
+        if char == current:
+            count += 1
+        else:
+            result.append(f"{count}{current}")
+            count = 1
+            current = char
+    
+    result.append(f"{count}{current}")
+    return "".join(result)
+
+def decompress_rle(text):
+    result = []
+    i = 0
+    while i < len(text):
+        # Extraire le nombre
+        count = ""
+        while i < len(text) and text[i].isdigit():
+            count += text[i]
+            i += 1
+        count = int(count)
+        
+        # Extraire le caractère
+        if i < len(text):
+            char = text[i]
+            result.append(char * count)
+            i += 1
+    
+    return "".join(result)
+
+def compress_binary(data):
+    if not data:
+        return ""
+    
+    result = []
+    count = 1
+    current = data[0]
+    
+    for bit in data[1:]:
+        if bit == current:
+            count += 1
+        else:
+            result.append(f"{count}:{current}")
+            count = 1
+            current = bit
+    
+    result.append(f"{count}:{current}")
+    return " ".join(result)
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9009))
+
+while True:
+    # Recevoir la commande et les données
+    data = s.recv(1024).decode().strip()
+    if not data:
+        break
+    
+    # Analyser la commande
+    if data.startswith("COMPRESS:"):
+        text = data.split(":", 1)[1].strip()
+        response = compress_rle(text)
+    elif data.startswith("DECOMPRESS:"):
+        text = data.split(":", 1)[1].strip()
+        response = decompress_rle(text)
+    elif data.startswith("COMPRESS_BINARY:"):
+        binary = data.split(":", 1)[1].strip()
+        response = compress_binary(binary)
+    else:
+        response = "ERROR: Commande non reconnue"
+    
+    # Envoyer la réponse
+    s.send(response.encode())
+    
+    # Recevoir la confirmation
+    confirmation = s.recv(1024).decode()
+    print(confirmation)
+    
+    if "flag" in confirmation.lower():
+        break
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour implémenter la compression RLE, vous pouvez :
+                1. Pour la compression :
+                   - Parcourir le texte caractère par caractère
+                   - Compter les répétitions consécutives
+                   - Créer une paire (compte, caractère) pour chaque séquence
+                   - Joindre les paires pour former le résultat
+                2. Pour la décompression :
+                   - Extraire les paires (compte, caractère)
+                   - Répéter chaque caractère selon son compte
+                   - Joindre les résultats
+                3. Pour les données binaires :
+                   - Utiliser le même principe mais avec des bits
+                   - Formater la sortie avec des séparateurs
+                   - Gérer les cas spéciaux (0, 1)
+                
+                N'oubliez pas de :
+                - Gérer les cas limites (texte vide, caractères uniques)
+                - Vérifier la validité des données
+                - Optimiser pour les grands ensembles de données
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

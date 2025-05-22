@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #4 - Comptage de Mots</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .text-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            white-space: pre-wrap;
+        }
+
+        .text-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .word-count-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .word-count-table th, .word-count-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .word-count-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .word-count-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #4: Comptez les mots, pas les caractères</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui compte le nombre de mots dans un texte donné. Un mot est défini comme une séquence de caractères alphanumériques séparée par des espaces ou des signes de ponctuation.</p>
+            <p>Votre programme devra gérer correctement les espaces multiples, les signes de ponctuation, et les retours à la ligne.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9004</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "Hello, world! This is a test."
+Client  : "6"
+Serveur : "Correct! Voici le flag: WORD_COUNT_DONE"
+
+Serveur : "Multiple    spaces    and\nnewlines\nshould\nbe\nhandled"
+Client  : "7"
+Serveur : "Correct! Voici le flag: WORD_COUNT_DONE"
+            </pre>
+        </div>
+
+        <div class="text-example">
+            <h3>📝 Exemples de Textes</h3>
+            <pre>
+Exemple 1:
+"Hello, world!"
+Nombre de mots : 2
+
+Exemple 2:
+"Python is a programming language. It's easy to learn!"
+Nombre de mots : 8
+
+Exemple 3:
+"Multiple    spaces    and
+newlines
+should
+be
+handled"
+Nombre de mots : 7
+            </pre>
+        </div>
+
+        <table class="word-count-table">
+            <tr>
+                <th>Texte</th>
+                <th>Nombre de mots</th>
+                <th>Explication</th>
+            </tr>
+            <tr>
+                <td>"Hello"</td>
+                <td>1</td>
+                <td>Un seul mot</td>
+            </tr>
+            <tr>
+                <td>"Hello world"</td>
+                <td>2</td>
+                <td>Deux mots séparés par un espace</td>
+            </tr>
+            <tr>
+                <td>"Hello, world!"</td>
+                <td>2</td>
+                <td>La ponctuation ne compte pas comme mot</td>
+            </tr>
+            <tr>
+                <td>"Hello   world"</td>
+                <td>2</td>
+                <td>Les espaces multiples sont ignorés</td>
+            </tr>
+            <tr>
+                <td>"Hello\nworld"</td>
+                <td>2</td>
+                <td>Les retours à la ligne sont traités comme des espaces</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import re
+
+def count_words(text):
+    # Supprimer la ponctuation et convertir en minuscules
+    text = re.sub(r'[^\w\s]', ' ', text)
+    # Diviser le texte en mots et filtrer les chaînes vides
+    words = [word for word in text.split() if word]
+    return len(words)
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9004))
+
+# Recevoir le texte
+data = s.recv(1024).decode().strip()
+
+# Compter les mots et envoyer le résultat
+word_count = str(count_words(data))
+s.send(word_count.encode())
+
+# Recevoir la réponse finale
+response = s.recv(1024)
+print(response.decode())
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour compter les mots efficacement, vous pouvez :
+                1. Utiliser des expressions régulières (re) pour nettoyer le texte
+                2. Utiliser la méthode split() pour diviser le texte en mots
+                3. Filtrer les chaînes vides
+                4. Compter la longueur de la liste résultante
+                N'oubliez pas de gérer les cas particuliers comme :
+                - Les espaces multiples
+                - Les signes de ponctuation
+                - Les retours à la ligne
+                - Les apostrophes dans les mots
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

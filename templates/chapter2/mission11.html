@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #11 - Analyse de Logs SOC</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .log-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .log-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .log-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .log-explanation li {
+            margin: 10px 0;
+        }
+
+        .log-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .log-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .log-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .log-table th, .log-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .log-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .log-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .log-visual {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            text-align: center;
+        }
+
+        .log-visual h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .log-visual pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .alert-level {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .alert-critical {
+            background: #cc0000;
+            color: #fff;
+        }
+
+        .alert-high {
+            background: #ff6600;
+            color: #fff;
+        }
+
+        .alert-medium {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .alert-low {
+            background: #00cc00;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #11: Analyse de Logs SOC</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui analyse des logs de sécurité (SOC - Security Operations Center). Le serveur vous enverra des logs à analyser pour détecter des activités suspectes et des tentatives d'intrusion.</p>
+            <p>Votre programme devra identifier les patterns d'attaque, les anomalies et générer des alertes appropriées.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9011</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="log-explanation">
+            <h3>📝 Types de Logs SOC</h3>
+            <p>Les logs SOC contiennent différents types d'informations :</p>
+            <ul>
+                <li>Logs d'authentification : tentatives de connexion, succès, échecs</li>
+                <li>Logs réseau : connexions, ports, protocoles</li>
+                <li>Logs système : accès aux fichiers, modifications, exécutions</li>
+                <li>Logs d'application : requêtes, erreurs, comportements anormaux</li>
+                <li>Logs de sécurité : alertes, violations, tentatives d'intrusion</li>
+            </ul>
+        </div>
+
+        <div class="log-visual">
+            <h3>🔍 Format des Logs</h3>
+            <pre>
+[2024-02-20 10:15:23] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:24] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:25] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:26] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:27] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:28] [ALERT] [BRUTE_FORCE] IP:192.168.1.100
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "[2024-02-20 10:15:23] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:24] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:25] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:26] [AUTH] [FAIL] IP:192.168.1.100 User:admin
+[2024-02-20 10:15:27] [AUTH] [FAIL] IP:192.168.1.100 User:admin"
+
+Client  : "ALERT: BRUTE_FORCE
+IP: 192.168.1.100
+User: admin
+Attempts: 5
+Time: 2024-02-20 10:15:23-27
+Level: HIGH"
+
+Serveur : "Correct! Voici le flag: SOC_ANALYZED"
+
+Serveur : "[2024-02-20 11:30:15] [NET] [CONN] IP:10.0.0.50 Port:445
+[2024-02-20 11:30:16] [NET] [CONN] IP:10.0.0.50 Port:445
+[2024-02-20 11:30:17] [NET] [CONN] IP:10.0.0.50 Port:445
+[2024-02-20 11:30:18] [NET] [CONN] IP:10.0.0.50 Port:445"
+
+Client  : "ALERT: PORT_SCAN
+IP: 10.0.0.50
+Port: 445
+Attempts: 4
+Time: 2024-02-20 11:30:15-18
+Level: MEDIUM"
+
+Serveur : "Correct! Voici le flag: SOC_ANALYZED"
+            </pre>
+        </div>
+
+        <table class="log-table">
+            <tr>
+                <th>Type d'Attaque</th>
+                <th>Pattern</th>
+                <th>Seuil d'Alerte</th>
+                <th>Niveau</th>
+            </tr>
+            <tr>
+                <td>Brute Force</td>
+                <td>Échecs d'authentification répétés</td>
+                <td>5 tentatives/5min</td>
+                <td><span class="alert-level alert-high">HIGH</span></td>
+            </tr>
+            <tr>
+                <td>Port Scan</td>
+                <td>Connexions répétées au même port</td>
+                <td>4 tentatives/1min</td>
+                <td><span class="alert-level alert-medium">MEDIUM</span></td>
+            </tr>
+            <tr>
+                <td>DDoS</td>
+                <td>Requêtes multiples depuis plusieurs IPs</td>
+                <td>1000 req/min</td>
+                <td><span class="alert-level alert-critical">CRITICAL</span></td>
+            </tr>
+            <tr>
+                <td>Data Exfiltration</td>
+                <td>Transferts de fichiers volumineux</td>
+                <td>100MB/5min</td>
+                <td><span class="alert-level alert-high">HIGH</span></td>
+            </tr>
+            <tr>
+                <td>Privilège Escalation</td>
+                <td>Modifications de permissions</td>
+                <td>1 tentative</td>
+                <td><span class="alert-level alert-critical">CRITICAL</span></td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import re
+from datetime import datetime, timedelta
+from collections import defaultdict
+
+class LogAnalyzer:
+    def __init__(self):
+        self.auth_attempts = defaultdict(list)
+        self.port_connections = defaultdict(list)
+        self.file_transfers = defaultdict(list)
+        self.alert_thresholds = {
+            'brute_force': {'count': 5, 'window': 300},  # 5 minutes
+            'port_scan': {'count': 4, 'window': 60},     # 1 minute
+            'ddos': {'count': 1000, 'window': 60},       # 1 minute
+            'data_exfil': {'size': 100, 'window': 300}   # 100MB in 5 minutes
+        }
+
+    def parse_log_line(self, line):
+        """Parse une ligne de log et extrait les informations importantes."""
+        pattern = r'\[(.*?)\] \[(.*?)\] \[(.*?)\] (.*)'
+        match = re.match(pattern, line)
+        if match:
+            timestamp, log_type, status, details = match.groups()
+            return {
+                'timestamp': datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S'),
+                'type': log_type,
+                'status': status,
+                'details': details
+            }
+        return None
+
+    def check_brute_force(self, log_entry):
+        """Vérifie les tentatives de brute force."""
+        if log_entry['type'] == 'AUTH' and log_entry['status'] == 'FAIL':
+            ip = re.search(r'IP:(\S+)', log_entry['details']).group(1)
+            user = re.search(r'User:(\S+)', log_entry['details']).group(1)
+            
+            # Ajouter la tentative
+            self.auth_attempts[(ip, user)].append(log_entry['timestamp'])
+            
+            # Nettoyer les anciennes tentatives
+            window = timedelta(seconds=self.alert_thresholds['brute_force']['window'])
+            self.auth_attempts[(ip, user)] = [
+                t for t in self.auth_attempts[(ip, user)]
+                if log_entry['timestamp'] - t <= window
+            ]
+            
+            # Vérifier le seuil
+            if len(self.auth_attempts[(ip, user)]) >= self.alert_thresholds['brute_force']['count']:
+                return {
+                    'type': 'BRUTE_FORCE',
+                    'ip': ip,
+                    'user': user,
+                    'attempts': len(self.auth_attempts[(ip, user)]),
+                    'time_start': min(self.auth_attempts[(ip, user)]),
+                    'time_end': max(self.auth_attempts[(ip, user)]),
+                    'level': 'HIGH'
+                }
+        return None
+
+    def check_port_scan(self, log_entry):
+        """Vérifie les scans de port."""
+        if log_entry['type'] == 'NET' and log_entry['status'] == 'CONN':
+            ip = re.search(r'IP:(\S+)', log_entry['details']).group(1)
+            port = re.search(r'Port:(\d+)', log_entry['details']).group(1)
+            
+            # Ajouter la connexion
+            self.port_connections[(ip, port)].append(log_entry['timestamp'])
+            
+            # Nettoyer les anciennes connexions
+            window = timedelta(seconds=self.alert_thresholds['port_scan']['window'])
+            self.port_connections[(ip, port)] = [
+                t for t in self.port_connections[(ip, port)]
+                if log_entry['timestamp'] - t <= window
+            ]
+            
+            # Vérifier le seuil
+            if len(self.port_connections[(ip, port)]) >= self.alert_thresholds['port_scan']['count']:
+                return {
+                    'type': 'PORT_SCAN',
+                    'ip': ip,
+                    'port': port,
+                    'attempts': len(self.port_connections[(ip, port)]),
+                    'time_start': min(self.port_connections[(ip, port)]),
+                    'time_end': max(self.port_connections[(ip, port)]),
+                    'level': 'MEDIUM'
+                }
+        return None
+
+    def analyze_logs(self, logs):
+        """Analyse un ensemble de logs et génère des alertes."""
+        alerts = []
+        for line in logs.split('\n'):
+            if not line.strip():
+                continue
+            
+            log_entry = self.parse_log_line(line)
+            if not log_entry:
+                continue
+            
+            # Vérifier différents types d'attaques
+            brute_force_alert = self.check_brute_force(log_entry)
+            if brute_force_alert:
+                alerts.append(brute_force_alert)
+            
+            port_scan_alert = self.check_port_scan(log_entry)
+            if port_scan_alert:
+                alerts.append(port_scan_alert)
+        
+        return alerts
+
+    def format_alert(self, alert):
+        """Formate une alerte pour l'affichage."""
+        return f"""ALERT: {alert['type']}
+IP: {alert['ip']}
+{'User: ' + alert['user'] if 'user' in alert else 'Port: ' + alert['port']}
+Attempts: {alert['attempts']}
+Time: {alert['time_start'].strftime('%Y-%m-%d %H:%M:%S')}-{alert['time_end'].strftime('%H:%M:%S')}
+Level: {alert['level']}"""
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9011))
+
+# Créer l'analyseur de logs
+analyzer = LogAnalyzer()
+
+while True:
+    # Recevoir les logs
+    logs = s.recv(4096).decode().strip()
+    if not logs:
+        break
+    
+    # Analyser les logs
+    alerts = analyzer.analyze_logs(logs)
+    
+    if alerts:
+        # Envoyer la première alerte
+        response = analyzer.format_alert(alerts[0])
+        s.send(response.encode())
+        
+        # Recevoir la confirmation
+        confirmation = s.recv(1024).decode()
+        print(confirmation)
+        
+        if "flag" in confirmation.lower():
+            break
+    else:
+        s.send(b"No alerts generated")
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour analyser les logs SOC, vous pouvez :
+                1. Parser les logs :
+                   - Utiliser des expressions régulières
+                   - Extraire les timestamps, types, statuts
+                   - Structurer les données pour l'analyse
+                2. Détecter les patterns :
+                   - Regrouper les événements par IP/utilisateur
+                   - Calculer les statistiques (nombre, fréquence)
+                   - Comparer avec les seuils d'alerte
+                3. Générer des alertes :
+                   - Définir les niveaux de gravité
+                   - Inclure les détails pertinents
+                   - Formater pour la lecture
+                
+                N'oubliez pas de :
+                - Gérer les fenêtres temporelles
+                - Nettoyer les anciennes données
+                - Vérifier les cas particuliers
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

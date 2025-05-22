@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau des Scores - CTF Enquête Criminelle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .scoreboard-container {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .scoreboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .scoreboard-table th {
+            background: #cc0000;
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+
+        .scoreboard-table td {
+            border-bottom: 1px solid #333;
+            padding: 12px;
+        }
+
+        .scoreboard-table tr:nth-child(even) {
+            background: rgba(40, 40, 40, 0.5);
+        }
+
+        .scoreboard-table tr:hover {
+            background: rgba(60, 60, 60, 0.7);
+        }
+
+        .rank {
+            text-align: center;
+            font-weight: bold;
+            width: 50px;
+        }
+
+        .gold {
+            color: #FFD700;
+        }
+
+        .silver {
+            color: #C0C0C0;
+        }
+
+        .bronze {
+            color: #CD7F32;
+        }
+
+        .points {
+            font-weight: bold;
+            color: #1ade1a;
+            text-align: center;
+        }
+
+        .mission-count {
+            text-align: center;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            background: #333;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #444;
+        }
+
+        .nav-btn.primary {
+            background: #cc0000;
+        }
+
+        .nav-btn.primary:hover {
+            background: #990000;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        .current-user {
+            background: rgba(204, 0, 0, 0.2) !important;
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="header">
+            <h1>Tableau des Scores</h1>
+            <p>Les meilleurs agents de l'enquête</p>
+        </div>
+
+        <table class="scoreboard-table">
+            <thead>
+                <tr>
+                    <th class="rank">Rang</th>
+                    <th>Agent</th>
+                    <th class="mission-count">Missions Complétées</th>
+                    <th class="points">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr {% if current_user.id == user.id %}class="current-user"{% endif %}>
+                    <td class="rank
+                        {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+                        {{ loop.index }}
+                    </td>
+                    <td class="username">{{ user.username }}</td>
+                    <td class="mission-count">{{ user.completed_missions|length }}/8</td>
+                    <td class="points">{{ user.total_points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation">
+            <a href="{{ url_for('home') }}" class="nav-btn">Retour au Dossier</a>
+            {% if current_user.is_authenticated %}
+                {% if current_user.current_mission <= 8 %}
+                    <a href="{{ url_for('mission' ~ current_user.current_mission) }}" class="nav-btn primary">Continuer l'Enquête</a>
+                {% else %}
+                    <a href="{{ url_for('victory') }}" class="nav-btn primary">Voir Résultats</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquête Criminelle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            width: 100%;
+            background: rgba(20, 20, 20, 0.9);
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            color: #cc0000;
+            font-size: 1.5em;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #e0e0e0;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #cc0000;
+        }
+
+        .nav-link.active {
+            color: #cc0000;
+            border-bottom: 2px solid #cc0000;
+        }
+
+        .case-file {
+            background: rgba(20, 20, 20, 0.95);
+            max-width: 800px;
+            width: 90%;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .confidential-stamp {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #cc0000;
+            color: white;
+            padding: 5px 15px;
+            transform: rotate(15deg);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .case-description {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-list li {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(40, 40, 40, 0.9);
+            border-left: 3px solid #666;
+            transition: all 0.3s ease;
+        }
+
+        .evidence-list li:hover {
+            border-left-color: #cc0000;
+            transform: translateX(10px);
+        }
+
+        .start-investigation {
+            background: #cc0000;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.2em;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .start-investigation:hover {
+            background: #990000;
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+            text-decoration: none;
+        }
+
+        .police-tape {
+            background: repeating-linear-gradient(
+                45deg,
+                #f8d000,
+                #f8d000 10px,
+                #000000 10px,
+                #000000 20px
+            );
+            height: 30px;
+            width: 100%;
+            margin: 40px 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 30, 30, 0.8);
+            padding: 10px 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .user-avatar {
+            background: #333;
+            color: #ccc;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        .user-progress {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .user-points {
+            background: #cc0000;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="navbar-brand">CTF Enquête Criminelle</a>
+        <div class="navbar-links">
+            <a href="{{ url_for('scoreboard') }}" class="nav-link">Tableau des Scores</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Connexion</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Inscription</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="case-file">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="confidential-stamp">CONFIDENTIEL</div>
+        <h1>Dossier d'Enquête #2025-137</h1>
+
+        {% if current_user.is_authenticated %}
+        <div class="user-info">
+            <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
+            <div class="user-details">
+                <div class="user-name">Agent {{ current_user.username }}</div>
+                <div class="user-progress">
+                    {% if current_user.current_mission <= 8 %}
+                        Mission actuelle: {{ current_user.current_mission }}/8
+                    {% else %}
+                        Toutes les missions terminées ✓
+                    {% endif %}
+                </div>
+            </div>
+            <div class="user-points">{{ current_user.total_points }} Points</div>
+        </div>
+        {% endif %}
+
+        <div class="case-description">
+            <p>Un dangereux criminel est en liberté dans la ville. Les indices suggèrent qu'il prépare son prochain coup. Le temps presse, nous avons besoin de vos compétences d'investigation pour le retrouver avant qu'il ne frappe à nouveau.</p>
+        </div>
+
+        {% if current_user.is_authenticated %}
+        <div style="margin: 30px 0;">
+            <h2>Choisissez votre dossier :</h2>
+            <div style="display: flex; gap: 30px; justify-content: center;">
+                {# Chapitre 1 #}
+                {% set progress1 = current_user.get_chapter_progress(1) %}
+                <div style="background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; min-width: 220px;">
+                    <h3 style="color: #cc0000; margin-top: 0;">Chapitre 1 : {{ chapters[0].title }}</h3>
+                    <div style="color: #aaa; font-size: 0.95em; margin-bottom: 10px;">{{ chapters[0].description }}</div>
+                    <div style="margin-bottom: 10px;">Difficulté : <b>{{ chapters[0].difficulty }}</b></div>
+                    <div style="margin-bottom: 10px;">Progression : {{ progress1 }}/{{ chapters[0].total_missions }} missions</div>
+                    {% if progress1 < chapters[0].total_missions %}
+                        <a href="{{ url_for('mission', chapter_id=1, mission_id=progress1+1) }}" class="start-investigation">{{ 'Continuer Chapitre 1' if progress1 > 0 else 'Commencer Chapitre 1' }}</a>
+                    {% else %}
+                        <span style="color: #00cc00; font-weight: bold;">Chapitre terminé ✓</span>
+                    {% endif %}
+                </div>
+                {# Chapitre 2 #}
+                {% set progress2 = current_user.get_chapter_progress(2) %}
+                <div style="background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; min-width: 220px;">
+                    <h3 style="color: #cc0000; margin-top: 0;">Chapitre 2 : {{ chapters[1].title }}</h3>
+                    <div style="color: #aaa; font-size: 0.95em; margin-bottom: 10px;">{{ chapters[1].description }}</div>
+                    <div style="margin-bottom: 10px;">Difficulté : <b>{{ chapters[1].difficulty }}</b></div>
+                    <div style="margin-bottom: 10px;">Progression : {{ progress2 }}/{{ chapters[1].total_missions }} missions</div>
+                    {% if current_user.is_chapter_unlocked(2) %}
+                        {% if progress2 < chapters[1].total_missions %}
+                            <a href="{{ url_for('mission', chapter_id=2, mission_id=progress2+1) }}" class="start-investigation">{{ 'Continuer Chapitre 2' if progress2 > 0 else 'Commencer Chapitre 2' }}</a>
+                        {% else %}
+                            <span style="color: #00cc00; font-weight: bold;">Chapitre terminé ✓</span>
+                        {% endif %}
+                    {% else %}
+                        <button class="start-investigation" style="background: #555; cursor: not-allowed;" disabled>Chapitre 2 verrouillé</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="police-tape"></div>
+
+        <h2>Éléments à votre disposition :</h2>
+        <ul class="evidence-list">
+            <li>📁 Dossiers de police et rapports d'enquête</li>
+            <li>🖼️ Images de surveillance</li>
+            <li>💻 Données numériques récupérées</li>
+            <li>🗺️ Cartes des dernières localisations connues</li>
+            <li>📱 Registres d'appels téléphoniques</li>
+        </ul>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.current_mission <= 8 %}
+                <a href="{{ url_for('mission' ~ current_user.current_mission) }}" class="start-investigation">
+                    {% if current_user.current_mission > 1 %}
+                        CONTINUER L'ENQUÊTE (Mission {{ current_user.current_mission }})
+                    {% else %}
+                        COMMENCER L'ENQUÊTE
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="{{ url_for('victory') }}" class="start-investigation">VOIR VOTRE SUCCÈS</a>
+            {% endif %}
+        {% else %}
+            <a href="{{ url_for('login') }}" class="start-investigation">CONNEXION REQUISE</a>
+        {% endif %}
+    </div>
+</body>
+</html>
