@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #8 - Parsing JSON</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .json-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .json-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .json-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .json-explanation li {
+            margin: 10px 0;
+        }
+
+        .json-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .json-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .json-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .json-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .json-table th, .json-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .json-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .json-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .json-syntax {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .json-syntax h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .json-syntax pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #8: Parsing JSON</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui analyse et manipule des données au format JSON. Le serveur vous enverra des objets JSON contenant des informations que vous devrez traiter selon des règles spécifiques.</p>
+            <p>Votre programme devra extraire, filtrer et transformer les données JSON pour obtenir le flag.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9008</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="json-explanation">
+            <h3>📝 Qu'est-ce que le JSON ?</h3>
+            <p>JSON (JavaScript Object Notation) est un format de données léger utilisé pour l'échange de données. Il est facile à lire et à écrire pour les humains, et facile à analyser et à générer pour les machines.</p>
+            <p>Les types de données JSON incluent :</p>
+            <ul>
+                <li>Objets : collections de paires clé-valeur</li>
+                <li>Tableaux : listes ordonnées de valeurs</li>
+                <li>Chaînes : texte entre guillemets</li>
+                <li>Nombres : entiers ou décimaux</li>
+                <li>Booléens : true ou false</li>
+                <li>null : valeur nulle</li>
+            </ul>
+        </div>
+
+        <div class="json-syntax">
+            <h3>🔤 Syntaxe JSON</h3>
+            <pre>
+{
+    "string": "texte",
+    "number": 42,
+    "float": 3.14,
+    "boolean": true,
+    "null": null,
+    "array": [1, 2, 3],
+    "object": {
+        "key": "value"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : {
+    "data": [
+        {"id": 1, "name": "Alice", "score": 85},
+        {"id": 2, "name": "Bob", "score": 92},
+        {"id": 3, "name": "Charlie", "score": 78}
+    ],
+    "filter": "score > 80"
+}
+
+Client  : {
+    "result": [
+        {"id": 1, "name": "Alice", "score": 85},
+        {"id": 2, "name": "Bob", "score": 92}
+    ]
+}
+
+Serveur : "Correct! Voici le flag: JSON_PARSED"
+
+Serveur : {
+    "users": [
+        {"name": "John", "age": 30, "active": true},
+        {"name": "Jane", "age": 25, "active": false},
+        {"name": "Bob", "age": 35, "active": true}
+    ],
+    "task": "Trouver les utilisateurs actifs de plus de 30 ans"
+}
+
+Client  : {
+    "result": [
+        {"name": "Bob", "age": 35, "active": true}
+    ]
+}
+
+Serveur : "Correct! Voici le flag: JSON_PARSED"
+            </pre>
+        </div>
+
+        <table class="json-table">
+            <tr>
+                <th>Opération</th>
+                <th>Description</th>
+                <th>Exemple</th>
+            </tr>
+            <tr>
+                <td>Filtrage</td>
+                <td>Extraire les éléments qui correspondent à un critère</td>
+                <td>score > 80</td>
+            </tr>
+            <tr>
+                <td>Tri</td>
+                <td>Ordonner les éléments selon une clé</td>
+                <td>sort by age</td>
+            </tr>
+            <tr>
+                <td>Agrégation</td>
+                <td>Calculer des statistiques sur les données</td>
+                <td>average score</td>
+            </tr>
+            <tr>
+                <td>Transformation</td>
+                <td>Modifier la structure des données</td>
+                <td>select name, score</td>
+            </tr>
+            <tr>
+                <td>Validation</td>
+                <td>Vérifier la conformité des données</td>
+                <td>check required fields</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import json
+
+def process_json(data, task):
+    # Convertir la chaîne JSON en dictionnaire Python
+    json_data = json.loads(data)
+    
+    # Extraire les données et la tâche
+    items = json_data.get('data', [])
+    filter_condition = json_data.get('filter', '')
+    
+    # Appliquer le filtre
+    if '>' in filter_condition:
+        field, value = filter_condition.split('>')
+        field = field.strip()
+        value = int(value.strip())
+        result = [item for item in items if item[field] > value]
+    elif 'active' in filter_condition:
+        result = [item for item in items if item.get('active', False)]
+    else:
+        result = items
+    
+    # Créer la réponse
+    response = {'result': result}
+    return json.dumps(response)
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9008))
+
+# Recevoir les données JSON
+data = s.recv(4096).decode().strip()
+
+# Traiter les données
+response = process_json(data, None)
+
+# Envoyer la réponse
+s.send(response.encode())
+
+# Recevoir la réponse finale
+final_response = s.recv(1024)
+print(final_response.decode())
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour traiter les données JSON, vous pouvez :
+                1. Utiliser le module json de Python :
+                   - json.loads() pour parser une chaîne JSON
+                   - json.dumps() pour convertir en chaîne JSON
+                2. Manipuler les données :
+                   - Accéder aux valeurs avec la notation point ou []
+                   - Utiliser les listes en compréhension pour filtrer
+                   - Utiliser les fonctions map() et filter()
+                3. Gérer les erreurs :
+                   - Vérifier la présence des clés avec .get()
+                   - Valider les types de données
+                   - Gérer les exceptions de parsing
+                
+                N'oubliez pas de :
+                - Vérifier la structure des données
+                - Gérer les cas particuliers
+                - Formater correctement la réponse
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

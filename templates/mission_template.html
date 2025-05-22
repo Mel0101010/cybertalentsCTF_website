@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mission {{ mission_id }} - Chapitre {{ chapter_id }}</title>
+    <style>
+        body { background: #181818; color: #eee; font-family: 'Special Elite', cursive; }
+        .container { max-width: 700px; margin: 40px auto; background: #232323; border-radius: 8px; box-shadow: 0 0 20px #0008; padding: 30px; }
+        h1 { color: #cc0000; }
+        .btn { background: #cc0000; color: #fff; padding: 10px 25px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; margin-top: 20px; }
+        .btn:hover { background: #990000; }
+        .back-link { color: #aaa; text-decoration: none; margin-top: 20px; display: inline-block; }
+        .back-link:hover { color: #fff; }
+        .flash-message { margin: 15px 0; padding: 10px; border-radius: 4px; background: #333; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mission {{ mission_id }} - Chapitre {{ chapter_id }}</h1>
+        <p>Bienvenue sur cette mission. Le template spécifique n'a pas été trouvé, mais vous pouvez tout de même répondre à l'énigme ci-dessous.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            <label for="answer">Votre réponse :</label><br>
+            <input type="text" id="answer" name="answer" style="width: 80%; padding: 8px; margin: 10px 0; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff;">
+            <br>
+            <button type="submit" class="btn">Valider</button>
+        </form>
+        <a href="{{ url_for('chapters') }}" class="back-link">&larr; Retour aux chapitres</a>
+    </div>
+</body>
+</html> 

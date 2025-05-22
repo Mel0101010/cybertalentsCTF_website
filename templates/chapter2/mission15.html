@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #15 - Analyse de Cryptographie</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .crypto-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .crypto-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .crypto-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .crypto-explanation li {
+            margin: 10px 0;
+        }
+
+        .cipher-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .cipher-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .cipher-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .crypto-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .crypto-table th, .crypto-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .crypto-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .crypto-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .cipher-visual {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            text-align: center;
+        }
+
+        .cipher-visual h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .cipher-visual pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .cipher-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .type-caesar {
+            background: #0066cc;
+            color: #fff;
+        }
+
+        .type-vigenere {
+            background: #009900;
+            color: #fff;
+        }
+
+        .type-rsa {
+            background: #cc6600;
+            color: #fff;
+        }
+
+        .type-aes {
+            background: #990099;
+            color: #fff;
+        }
+
+        .type-base64 {
+            background: #666666;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #15: Analyse de Cryptographie</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui analyse et déchiffre des messages cryptés. Le serveur vous enverra des messages chiffrés à analyser pour déterminer leur méthode de chiffrement, leur clé et leur contenu.</p>
+            <p>Votre programme devra identifier le type de chiffrement, extraire les paramètres importants et déchiffrer le message pour obtenir le flag.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9015</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="crypto-explanation">
+            <h3>📝 Types de Chiffrement</h3>
+            <p>Les messages peuvent être chiffrés avec différentes méthodes :</p>
+            <ul>
+                <li>Chiffrement de César : Décalage simple des lettres</li>
+                <li>Chiffrement de Vigenère : Chiffrement polyalphabétique</li>
+                <li>RSA : Chiffrement asymétrique</li>
+                <li>AES : Chiffrement symétrique moderne</li>
+                <li>Base64 : Encodage (non chiffrement)</li>
+            </ul>
+        </div>
+
+        <div class="cipher-visual">
+            <h3>🔍 Format des Messages</h3>
+            <pre>
+[2024-02-20 10:15:23] [MESSAGE] [ANALYSIS]
+Type: Caesar
+Key: 3
+Format: text
+Length: 1024 bytes
+
+[HEADERS]
+Content-Type: text/plain
+Encoding: UTF-8
+Timestamp: 1708424123
+
+[PAYLOAD]
+KHOOR ZRUOG!
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "[2024-02-20 10:15:23] [MESSAGE] [ANALYSIS]
+Type: Caesar
+Key: 3
+Format: text
+Length: 1024 bytes
+
+[HEADERS]
+Content-Type: text/plain
+Encoding: UTF-8
+Timestamp: 1708424123
+
+[PAYLOAD]
+KHOOR ZRUOG!"
+
+Client  : "ANALYSIS: Caesar
+Type: Caesar Cipher
+Key: 3
+Method: Shift
+Original: HELLO WORLD!
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: CRYPTO_ANALYZED"
+
+Serveur : "[2024-02-20 11:30:15] [MESSAGE] [ANALYSIS]
+Type: Vigenere
+Key: SECRET
+Format: text
+Length: 512 bytes
+
+[HEADERS]
+Content-Type: text/plain
+Encoding: UTF-8
+Timestamp: 1708429015
+
+[PAYLOAD]
+Lxfopv ef Rnepu!"
+
+Client  : "ANALYSIS: Vigenere
+Type: Vigenere Cipher
+Key: SECRET
+Method: Polyalphabetic
+Original: Attack at Dawn!
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: CRYPTO_ANALYZED"
+            </pre>
+        </div>
+
+        <table class="crypto-table">
+            <tr>
+                <th>Type</th>
+                <th>Clé</th>
+                <th>Méthode</th>
+                <th>Vulnérabilités</th>
+            </tr>
+            <tr>
+                <td><span class="cipher-type type-caesar">Caesar</span></td>
+                <td>Décalage (1-25)</td>
+                <td>Substitution simple</td>
+                <td>Analyse fréquentielle</td>
+            </tr>
+            <tr>
+                <td><span class="cipher-type type-vigenere">Vigenere</span></td>
+                <td>Mot-clé</td>
+                <td>Substitution multiple</td>
+                <td>Kasiski, Indice de coïncidence</td>
+            </tr>
+            <tr>
+                <td><span class="cipher-type type-rsa">RSA</span></td>
+                <td>Clé publique/privée</td>
+                <td>Asymétrique</td>
+                <td>Factorisation, Timing</td>
+            </tr>
+            <tr>
+                <td><span class="cipher-type type-aes">AES</span></td>
+                <td>Clé symétrique</td>
+                <td>Bloc/Flux</td>
+                <td>Side-channel, Padding</td>
+            </tr>
+            <tr>
+                <td><span class="cipher-type type-base64">Base64</span></td>
+                <td>N/A</td>
+                <td>Encodage</td>
+                <td>Aucune (non chiffré)</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import re
+import base64
+from datetime import datetime
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP, AES
+from Crypto.Util.Padding import unpad
+
+class CryptoAnalyzer:
+    def __init__(self):
+        self.cipher_patterns = {
+            'caesar': [
+                (r'Type: Caesar', 'header'),
+                (r'Key: (\d+)', 'key'),
+                (r'[A-Za-z]', 'text')
+            ],
+            'vigenere': [
+                (r'Type: Vigenere', 'header'),
+                (r'Key: ([A-Za-z]+)', 'key'),
+                (r'[A-Za-z]', 'text')
+            ],
+            'rsa': [
+                (r'Type: RSA', 'header'),
+                (r'Key: (-----BEGIN.*?-----.*?-----END.*?-----)', 'key', re.DOTALL),
+                (r'[A-Za-z0-9+/=]{32,}', 'base64')
+            ],
+            'aes': [
+                (r'Type: AES', 'header'),
+                (r'Key: ([A-Za-z0-9+/=]{32,})', 'key'),
+                (r'IV: ([A-Za-z0-9+/=]{24,})', 'iv'),
+                (r'[A-Za-z0-9+/=]{32,}', 'base64')
+            ],
+            'base64': [
+                (r'Type: Base64', 'header'),
+                (r'[A-Za-z0-9+/=]{32,}', 'base64')
+            ]
+        }
+        
+        self.vulnerability_patterns = {
+            'caesar': [
+                (r'[Ee]', 'high_frequency'),
+                (r'[QqXxZz]', 'low_frequency'),
+                (r'[^A-Za-z\s]', 'special_chars')
+            ],
+            'vigenere': [
+                (r'([A-Za-z])\1{2,}', 'repeated_chars'),
+                (r'[Ee]{2,}', 'common_pattern'),
+                (r'[^A-Za-z\s]', 'special_chars')
+            ],
+            'rsa': [
+                (r'-----BEGIN.*?PRIVATE.*?-----', 'private_key_exposed'),
+                (r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', 'ip_address'),
+                (r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', 'email')
+            ],
+            'aes': [
+                (r'[A-Za-z0-9+/=]{16}', 'block_size'),
+                (r'[A-Za-z0-9+/=]{32,}', 'multiple_blocks'),
+                (r'[^A-Za-z0-9+/=\s]', 'invalid_chars')
+            ],
+            'base64': [
+                (r'[^A-Za-z0-9+/=\s]', 'invalid_chars'),
+                (r'[A-Za-z0-9+/=]{1,}(?![A-Za-z0-9+/=])', 'incomplete_block'),
+                (r'[A-Za-z0-9+/=]{4,}(?![A-Za-z0-9+/=]{4})', 'padding_error')
+            ]
+        }
+
+    def extract_message_info(self, message_data):
+        """Extrait les informations de base du message."""
+        info = {}
+        
+        # Extraire les informations de base
+        type_match = re.search(r'Type: (.*)', message_data)
+        key_match = re.search(r'Key: (.*)', message_data)
+        format_match = re.search(r'Format: (.*)', message_data)
+        length_match = re.search(r'Length: (\d+) bytes', message_data)
+        
+        if all([type_match, format_match, length_match]):
+            info['type'] = type_match.group(1).lower()
+            info['format'] = format_match.group(1)
+            info['length'] = int(length_match.group(1))
+            
+            if key_match:
+                info['key'] = key_match.group(1)
+        
+        # Extraire le timestamp
+        timestamp_match = re.search(r'Timestamp: (\d+)', message_data)
+        if timestamp_match:
+            info['timestamp'] = int(timestamp_match.group(1))
+        
+        return info
+
+    def extract_headers(self, message_data):
+        """Extrait les en-têtes du message."""
+        headers_section = re.search(r'\[HEADERS\](.*?)(?=\[|$)', message_data, re.DOTALL)
+        if not headers_section:
+            return []
+        
+        headers = []
+        for line in headers_section.group(1).split('\n'):
+            line = line.strip()
+            if line:
+                headers.append(line)
+        
+        return headers
+
+    def extract_payload(self, message_data):
+        """Extrait le payload du message."""
+        payload_section = re.search(r'\[PAYLOAD\](.*?)(?=\[|$)', message_data, re.DOTALL)
+        if not payload_section:
+            return None
+        
+        return payload_section.group(1).strip()
+
+    def identify_cipher(self, headers, payload):
+        """Identifie le type de chiffrement basé sur les en-têtes et le payload."""
+        cipher_scores = {
+            'caesar': 0,
+            'vigenere': 0,
+            'rsa': 0,
+            'aes': 0,
+            'base64': 0
+        }
+        
+        # Analyser les en-têtes
+        for header in headers:
+            for cipher, patterns in self.cipher_patterns.items():
+                for pattern, _ in patterns:
+                    if re.search(pattern, header, re.IGNORECASE):
+                        cipher_scores[cipher] += 1
+        
+        # Analyser le payload si présent
+        if payload:
+            for cipher, patterns in self.cipher_patterns.items():
+                for pattern, _ in patterns:
+                    if re.search(pattern, payload, re.IGNORECASE):
+                        cipher_scores[cipher] += 1
+        
+        # Déterminer le chiffrement avec le score le plus élevé
+        max_score = max(cipher_scores.values())
+        if max_score == 0:
+            return 'Unknown'
+        
+        return max(cipher_scores.items(), key=lambda x: x[1])[0]
+
+    def analyze_vulnerabilities(self, cipher, headers, payload):
+        """Analyse les vulnérabilités dans le message."""
+        vulnerabilities = []
+        
+        if cipher in self.vulnerability_patterns:
+            # Vérifier les en-têtes
+            for header in headers:
+                for pattern, vuln_type in self.vulnerability_patterns[cipher]:
+                    if re.search(pattern, header, re.IGNORECASE):
+                        vulnerabilities.append(vuln_type)
+            
+            # Vérifier le payload si présent
+            if payload:
+                for pattern, vuln_type in self.vulnerability_patterns[cipher]:
+                    if re.search(pattern, payload, re.IGNORECASE):
+                        vulnerabilities.append(vuln_type)
+        
+        return vulnerabilities
+
+    def decrypt_caesar(self, text, key):
+        """Déchiffre un texte chiffré avec le chiffrement de César."""
+        result = ""
+        for char in text:
+            if char.isalpha():
+                ascii_offset = ord('A') if char.isupper() else ord('a')
+                result += chr((ord(char) - ascii_offset - int(key)) % 26 + ascii_offset)
+            else:
+                result += char
+        return result
+
+    def decrypt_vigenere(self, text, key):
+        """Déchiffre un texte chiffré avec le chiffrement de Vigenère."""
+        result = ""
+        key_length = len(key)
+        key_as_int = [ord(k.upper()) - ord('A') for k in key]
+        text_int = [ord(t.upper()) - ord('A') if t.isalpha() else t for t in text]
+        
+        for i, char in enumerate(text_int):
+            if isinstance(char, int):
+                result += chr((char - key_as_int[i % key_length]) % 26 + ord('A'))
+            else:
+                result += char
+        
+        return result
+
+    def decrypt_rsa(self, text, key_data):
+        """Déchiffre un texte chiffré avec RSA."""
+        try:
+            # Convertir la clé en format RSA
+            key = RSA.import_key(key_data)
+            cipher = PKCS1_OAEP.new(key)
+            
+            # Déchiffrer le texte en base64
+            encrypted_data = base64.b64decode(text)
+            decrypted_data = cipher.decrypt(encrypted_data)
+            
+            return decrypted_data.decode()
+        except Exception as e:
+            return f"Erreur de déchiffrement RSA: {str(e)}"
+
+    def decrypt_aes(self, text, key, iv):
+        """Déchiffre un texte chiffré avec AES."""
+        try:
+            # Convertir la clé et l'IV
+            key_data = base64.b64decode(key)
+            iv_data = base64.b64decode(iv)
+            
+            # Créer le déchiffreur AES
+            cipher = AES.new(key_data, AES.MODE_CBC, iv_data)
+            
+            # Déchiffrer le texte en base64
+            encrypted_data = base64.b64decode(text)
+            decrypted_data = unpad(cipher.decrypt(encrypted_data), AES.block_size)
+            
+            return decrypted_data.decode()
+        except Exception as e:
+            return f"Erreur de déchiffrement AES: {str(e)}"
+
+    def decode_base64(self, text):
+        """Décode un texte encodé en base64."""
+        try:
+            return base64.b64decode(text).decode()
+        except Exception as e:
+            return f"Erreur de décodage base64: {str(e)}"
+
+    def analyze_message(self, message_data):
+        """Analyse un message chiffré et génère un rapport."""
+        # Extraire les informations de base
+        message_info = self.extract_message_info(message_data)
+        if not message_info:
+            return None
+        
+        # Extraire les en-têtes et le payload
+        headers = self.extract_headers(message_data)
+        payload = self.extract_payload(message_data)
+        
+        # Identifier le chiffrement
+        cipher = self.identify_cipher(headers, payload)
+        
+        # Analyser les vulnérabilités
+        vulnerabilities = self.analyze_vulnerabilities(cipher, headers, payload)
+        
+        # Déchiffrer le message
+        decrypted = None
+        if cipher == 'caesar' and 'key' in message_info:
+            decrypted = self.decrypt_caesar(payload, message_info['key'])
+        elif cipher == 'vigenere' and 'key' in message_info:
+            decrypted = self.decrypt_vigenere(payload, message_info['key'])
+        elif cipher == 'rsa' and 'key' in message_info:
+            decrypted = self.decrypt_rsa(payload, message_info['key'])
+        elif cipher == 'aes' and 'key' in message_info:
+            iv_match = re.search(r'IV: ([A-Za-z0-9+/=]{24,})', message_data)
+            if iv_match:
+                decrypted = self.decrypt_aes(payload, message_info['key'], iv_match.group(1))
+        elif cipher == 'base64':
+            decrypted = self.decode_base64(payload)
+        
+        # Déterminer le niveau de confiance
+        confidence = 'HIGH' if decrypted and not vulnerabilities else 'MEDIUM' if decrypted else 'LOW'
+        
+        return {
+            'type': cipher.upper(),
+            'info': message_info,
+            'decrypted': decrypted,
+            'vulnerabilities': vulnerabilities,
+            'confidence': confidence
+        }
+
+    def format_analysis(self, analysis):
+        """Formate l'analyse pour l'affichage."""
+        output = [f"ANALYSIS: {analysis['type']}"]
+        
+        # Ajouter les détails spécifiques au chiffrement
+        if analysis['type'] == 'CAESAR':
+            output.append("Type: Caesar Cipher")
+            output.append(f"Key: {analysis['info']['key']}")
+            output.append("Method: Shift")
+        elif analysis['type'] == 'VIGENERE':
+            output.append("Type: Vigenere Cipher")
+            output.append(f"Key: {analysis['info']['key']}")
+            output.append("Method: Polyalphabetic")
+        elif analysis['type'] == 'RSA':
+            output.append("Type: RSA Cipher")
+            output.append("Method: Asymmetric")
+        elif analysis['type'] == 'AES':
+            output.append("Type: AES Cipher")
+            output.append("Method: Symmetric Block")
+        elif analysis['type'] == 'BASE64':
+            output.append("Type: Base64 Encoding")
+            output.append("Method: Encoding")
+        
+        # Ajouter le message déchiffré
+        if analysis['decrypted']:
+            output.append(f"Original: {analysis['decrypted']}")
+        
+        # Ajouter les vulnérabilités si présentes
+        if analysis['vulnerabilities']:
+            output.append("Vulnerabilities:")
+            for vuln in analysis['vulnerabilities']:
+                output.append(f"  - {vuln}")
+        
+        # Ajouter le niveau de confiance
+        output.append(f"Confidence: {analysis['confidence']}")
+        
+        return '\n'.join(output)
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9015))
+
+# Créer l'analyseur de cryptographie
+analyzer = CryptoAnalyzer()
+
+while True:
+    # Recevoir le message
+    message = s.recv(4096).decode().strip()
+    if not message:
+        break
+    
+    # Analyser le message
+    analysis = analyzer.analyze_message(message)
+    
+    if analysis:
+        # Envoyer l'analyse
+        response = analyzer.format_analysis(analysis)
+        s.send(response.encode())
+        
+        # Recevoir la confirmation
+        confirmation = s.recv(1024).decode()
+        print(confirmation)
+        
+        if "flag" in confirmation.lower():
+            break
+    else:
+        s.send(b"Invalid message format")
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour analyser un message chiffré, vous pouvez :
+                1. Identifier le type de chiffrement :
+                   - Format des en-têtes
+                   - Structure du message
+                   - Caractéristiques du texte
+                2. Extraire les paramètres :
+                   - Clé de chiffrement
+                   - Vecteur d'initialisation
+                   - Mode d'opération
+                3. Déchiffrer le message :
+                   - Appliquer l'algorithme
+                   - Gérer les erreurs
+                   - Vérifier le résultat
+                
+                N'oubliez pas de :
+                - Vérifier les vulnérabilités
+                - Analyser les patterns
+                - Évaluer la confiance
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

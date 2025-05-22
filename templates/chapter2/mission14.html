@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #14 - Analyse de Protocoles Réseau</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .protocol-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .protocol-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .protocol-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .protocol-explanation li {
+            margin: 10px 0;
+        }
+
+        .packet-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .packet-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .packet-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .protocol-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .protocol-table th, .protocol-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .protocol-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .protocol-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .packet-visual {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            text-align: center;
+        }
+
+        .packet-visual h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .packet-visual pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .protocol-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .type-http {
+            background: #0066cc;
+            color: #fff;
+        }
+
+        .type-dns {
+            background: #009900;
+            color: #fff;
+        }
+
+        .type-ftp {
+            background: #cc6600;
+            color: #fff;
+        }
+
+        .type-smtp {
+            background: #990099;
+            color: #fff;
+        }
+
+        .type-ssh {
+            background: #666666;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #14: Analyse de Protocoles Réseau</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui analyse le trafic réseau pour identifier et analyser différents protocoles. Le serveur vous enverra des paquets réseau à analyser pour déterminer leur protocole, leur contenu et leur comportement.</p>
+            <p>Votre programme devra extraire les informations importantes, détecter les anomalies et générer un rapport d'analyse.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9014</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="protocol-explanation">
+            <h3>📝 Protocoles à Analyser</h3>
+            <p>Les paquets peuvent appartenir à différents protocoles :</p>
+            <ul>
+                <li>HTTP : Protocole de transfert hypertexte</li>
+                <li>DNS : Système de noms de domaine</li>
+                <li>FTP : Protocole de transfert de fichiers</li>
+                <li>SMTP : Protocole de transfert de courrier</li>
+                <li>SSH : Protocole de connexion sécurisée</li>
+            </ul>
+        </div>
+
+        <div class="packet-visual">
+            <h3>🔍 Format des Paquets</h3>
+            <pre>
+[2024-02-20 10:15:23] [PACKET] [ANALYSIS]
+Source: 192.168.1.100:54321
+Destination: 192.168.1.200:80
+Protocol: TCP
+Length: 1024 bytes
+Flags: SYN,ACK
+Window: 65535
+Checksum: 0x1234
+
+[HEADERS]
+GET /index.html HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0
+Accept: text/html
+Connection: keep-alive
+
+[PAYLOAD]
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+</body>
+</html>
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "[2024-02-20 10:15:23] [PACKET] [ANALYSIS]
+Source: 192.168.1.100:54321
+Destination: 192.168.1.200:80
+Protocol: TCP
+Length: 1024 bytes
+Flags: SYN,ACK
+Window: 65535
+Checksum: 0x1234
+
+[HEADERS]
+GET /index.html HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0
+Accept: text/html
+Connection: keep-alive
+
+[PAYLOAD]
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+</body>
+</html>"
+
+Client  : "ANALYSIS: HTTP
+Type: HTTP Request
+Method: GET
+URL: /index.html
+Version: HTTP/1.1
+Headers:
+  Host: example.com
+  User-Agent: Mozilla/5.0
+  Accept: text/html
+  Connection: keep-alive
+Content:
+  Type: text/html
+  Length: 1024 bytes
+  Contains: HTML document
+Anomalies: None
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: PROTOCOL_ANALYZED"
+
+Serveur : "[2024-02-20 11:30:15] [PACKET] [ANALYSIS]
+Source: 192.168.1.100:54322
+Destination: 192.168.1.200:53
+Protocol: UDP
+Length: 512 bytes
+Checksum: 0x5678
+
+[HEADERS]
+Transaction ID: 0x1234
+Flags: Standard query
+Questions: 1
+Answer RRs: 0
+Authority RRs: 0
+Additional RRs: 0
+
+[PAYLOAD]
+example.com. IN A"
+
+Client  : "ANALYSIS: DNS
+Type: DNS Query
+Transaction ID: 0x1234
+Query Type: A Record
+Domain: example.com
+Flags: Standard query
+Questions: 1
+Answers: 0
+Anomalies: None
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: PROTOCOL_ANALYZED"
+            </pre>
+        </div>
+
+        <table class="protocol-table">
+            <tr>
+                <th>Protocole</th>
+                <th>Port</th>
+                <th>Caractéristiques</th>
+                <th>Anomalies</th>
+            </tr>
+            <tr>
+                <td><span class="protocol-type type-http">HTTP</span></td>
+                <td>80/443</td>
+                <td>Requêtes/Réponses, Headers, Body</td>
+                <td>Méthodes suspectes, Headers malformés</td>
+            </tr>
+            <tr>
+                <td><span class="protocol-type type-dns">DNS</span></td>
+                <td>53</td>
+                <td>Requêtes/Réponses, Records</td>
+                <td>Domaines suspects, Tunneling</td>
+            </tr>
+            <tr>
+                <td><span class="protocol-type type-ftp">FTP</span></td>
+                <td>21</td>
+                <td>Commandes, Réponses, Transfert</td>
+                <td>Commandes non autorisées</td>
+            </tr>
+            <tr>
+                <td><span class="protocol-type type-smtp">SMTP</span></td>
+                <td>25</td>
+                <td>Commandes, Réponses, Mails</td>
+                <td>Spam, Attachements suspects</td>
+            </tr>
+            <tr>
+                <td><span class="protocol-type type-ssh">SSH</span></td>
+                <td>22</td>
+                <td>Handshake, Chiffrement</td>
+                <td>Brute force, Versions obsolètes</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import re
+from datetime import datetime
+
+class ProtocolAnalyzer:
+    def __init__(self):
+        self.protocol_patterns = {
+            'http': [
+                (r'^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) .* HTTP/\d\.\d$', 'request'),
+                (r'^HTTP/\d\.\d \d{3} .*$', 'response'),
+                (r'^Host: .*$', 'header'),
+                (r'^User-Agent: .*$', 'header'),
+                (r'^Content-Type: .*$', 'header')
+            ],
+            'dns': [
+                (r'Transaction ID: 0x[0-9a-f]{4}$', 'header'),
+                (r'Flags: .*$', 'header'),
+                (r'Questions: \d+$', 'header'),
+                (r'Answer RRs: \d+$', 'header'),
+                (r'.* IN (A|AAAA|CNAME|MX|TXT)$', 'query')
+            ],
+            'ftp': [
+                (r'^(USER|PASS|ACCT|CWD|CDUP|SMNT|QUIT|REIN|PORT|PASV|TYPE|STRU|MODE|RETR|STOR|STOU|APPE|ALLO|REST|RNFR|RNTO|ABOR|DELE|RMD|MKD|PWD|LIST|NLST|SITE|SYST|STAT|HELP|NOOP) .*$', 'command'),
+                (r'^\d{3} .*$', 'response')
+            ],
+            'smtp': [
+                (r'^(HELO|EHLO|MAIL|RCPT|DATA|RSET|VRFY|EXPN|HELP|NOOP|QUIT) .*$', 'command'),
+                (r'^\d{3} .*$', 'response'),
+                (r'^From: .*$', 'header'),
+                (r'^To: .*$', 'header'),
+                (r'^Subject: .*$', 'header')
+            ],
+            'ssh': [
+                (r'^SSH-\d\.\d-.*$', 'version'),
+                (r'^.* key exchange .*$', 'handshake'),
+                (r'^.* encryption .*$', 'handshake'),
+                (r'^.* authentication .*$', 'handshake')
+            ]
+        }
+        
+        self.anomaly_patterns = {
+            'http': [
+                (r'^(GET|POST) /(admin|wp-admin|phpmyadmin|shell|cmd)\.php', 'suspicious_path'),
+                (r'User-Agent: (sqlmap|nikto|nmap|metasploit)', 'suspicious_agent'),
+                (r'Content-Type: (application/x-php|application/x-asp|application/x-jsp)', 'suspicious_content')
+            ],
+            'dns': [
+                (r'.*\.(malware|virus|trojan|backdoor)\.com$', 'suspicious_domain'),
+                (r'TXT ".*[<>].*"', 'suspicious_txt'),
+                (r'CNAME .*\.(tor|vpn|proxy)\.', 'suspicious_cname')
+            ],
+            'ftp': [
+                (r'USER (admin|root|administrator)', 'suspicious_user'),
+                (r'STOR .*\.(php|asp|jsp|exe|bat|sh)$', 'suspicious_upload'),
+                (r'RETR .*\.(conf|passwd|shadow)$', 'suspicious_download')
+            ],
+            'smtp': [
+                (r'RCPT TO: .*@(spam|malware|virus)\.', 'suspicious_recipient'),
+                (r'Subject: .*(viagra|casino|lottery|password)', 'suspicious_subject'),
+                (r'Content-Type: .*\.(exe|bat|sh|php)$', 'suspicious_attachment')
+            ],
+            'ssh': [
+                (r'Failed password for .* from .* port \d+', 'brute_force'),
+                (r'Invalid user .* from .* port \d+', 'brute_force'),
+                (r'SSH-\d\.\d-OpenSSH_(\d\.\d)', lambda m: 'old_version' if float(m.group(1)) < 7.0 else None)
+            ]
+        }
+
+    def extract_packet_info(self, packet_data):
+        """Extrait les informations de base du paquet."""
+        info = {}
+        
+        # Extraire les informations de base
+        source_match = re.search(r'Source: (.*?):(\d+)', packet_data)
+        dest_match = re.search(r'Destination: (.*?):(\d+)', packet_data)
+        protocol_match = re.search(r'Protocol: (.*)', packet_data)
+        length_match = re.search(r'Length: (\d+) bytes', packet_data)
+        
+        if all([source_match, dest_match, protocol_match, length_match]):
+            info['source'] = {
+                'ip': source_match.group(1),
+                'port': int(source_match.group(2))
+            }
+            info['destination'] = {
+                'ip': dest_match.group(1),
+                'port': int(dest_match.group(2))
+            }
+            info['protocol'] = protocol_match.group(1)
+            info['length'] = int(length_match.group(1))
+        
+        # Extraire les flags TCP si présents
+        flags_match = re.search(r'Flags: (.*)', packet_data)
+        if flags_match:
+            info['flags'] = flags_match.group(1).split(',')
+        
+        # Extraire le checksum
+        checksum_match = re.search(r'Checksum: (0x[0-9a-f]{4})', packet_data)
+        if checksum_match:
+            info['checksum'] = checksum_match.group(1)
+        
+        return info
+
+    def extract_headers(self, packet_data):
+        """Extrait les en-têtes du paquet."""
+        headers_section = re.search(r'\[HEADERS\](.*?)(?=\[|$)', packet_data, re.DOTALL)
+        if not headers_section:
+            return []
+        
+        headers = []
+        for line in headers_section.group(1).split('\n'):
+            line = line.strip()
+            if line:
+                headers.append(line)
+        
+        return headers
+
+    def extract_payload(self, packet_data):
+        """Extrait le payload du paquet."""
+        payload_section = re.search(r'\[PAYLOAD\](.*?)(?=\[|$)', packet_data, re.DOTALL)
+        if not payload_section:
+            return None
+        
+        return payload_section.group(1).strip()
+
+    def identify_protocol(self, headers, payload):
+        """Identifie le protocole basé sur les en-têtes et le payload."""
+        protocol_scores = {
+            'http': 0,
+            'dns': 0,
+            'ftp': 0,
+            'smtp': 0,
+            'ssh': 0
+        }
+        
+        # Analyser les en-têtes
+        for header in headers:
+            for protocol, patterns in self.protocol_patterns.items():
+                for pattern, _ in patterns:
+                    if re.search(pattern, header, re.IGNORECASE):
+                        protocol_scores[protocol] += 1
+        
+        # Analyser le payload si présent
+        if payload:
+            for protocol, patterns in self.protocol_patterns.items():
+                for pattern, _ in patterns:
+                    if re.search(pattern, payload, re.IGNORECASE):
+                        protocol_scores[protocol] += 1
+        
+        # Déterminer le protocole avec le score le plus élevé
+        max_score = max(protocol_scores.values())
+        if max_score == 0:
+            return 'Unknown'
+        
+        return max(protocol_scores.items(), key=lambda x: x[1])[0]
+
+    def analyze_anomalies(self, protocol, headers, payload):
+        """Analyse les anomalies dans le paquet."""
+        anomalies = []
+        
+        if protocol in self.anomaly_patterns:
+            # Vérifier les en-têtes
+            for header in headers:
+                for pattern, anomaly_type in self.anomaly_patterns[protocol]:
+                    if callable(anomaly_type):
+                        match = re.search(pattern, header, re.IGNORECASE)
+                        if match:
+                            result = anomaly_type(match)
+                            if result:
+                                anomalies.append(result)
+                    elif re.search(pattern, header, re.IGNORECASE):
+                        anomalies.append(anomaly_type)
+            
+            # Vérifier le payload si présent
+            if payload:
+                for pattern, anomaly_type in self.anomaly_patterns[protocol]:
+                    if callable(anomaly_type):
+                        match = re.search(pattern, payload, re.IGNORECASE)
+                        if match:
+                            result = anomaly_type(match)
+                            if result:
+                                anomalies.append(result)
+                    elif re.search(pattern, payload, re.IGNORECASE):
+                        anomalies.append(anomaly_type)
+        
+        return anomalies
+
+    def analyze_packet(self, packet_data):
+        """Analyse un paquet réseau et génère un rapport."""
+        # Extraire les informations de base
+        packet_info = self.extract_packet_info(packet_data)
+        if not packet_info:
+            return None
+        
+        # Extraire les en-têtes et le payload
+        headers = self.extract_headers(packet_data)
+        payload = self.extract_payload(packet_data)
+        
+        # Identifier le protocole
+        protocol = self.identify_protocol(headers, payload)
+        
+        # Analyser les anomalies
+        anomalies = self.analyze_anomalies(protocol, headers, payload)
+        
+        # Générer les détails spécifiques au protocole
+        details = self.generate_protocol_details(protocol, headers, payload)
+        
+        # Déterminer le niveau de confiance
+        confidence = 'HIGH' if len(details) >= 3 and not anomalies else 'MEDIUM' if len(details) >= 2 else 'LOW'
+        
+        return {
+            'type': protocol.upper(),
+            'info': packet_info,
+            'details': details,
+            'anomalies': anomalies,
+            'confidence': confidence
+        }
+
+    def generate_protocol_details(self, protocol, headers, payload):
+        """Génère les détails spécifiques au protocole."""
+        details = []
+        
+        if protocol == 'http':
+            # Analyser la requête/réponse HTTP
+            for header in headers:
+                if re.match(r'^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) .* HTTP/\d\.\d$', header):
+                    method, path, version = header.split(' ')
+                    details.append(f'Method: {method}')
+                    details.append(f'URL: {path}')
+                    details.append(f'Version: {version}')
+                elif re.match(r'^HTTP/\d\.\d \d{3} .*$', header):
+                    version, code, message = header.split(' ', 2)
+                    details.append(f'Status: {code} {message}')
+                    details.append(f'Version: {version}')
+                elif ':' in header:
+                    key, value = header.split(':', 1)
+                    details.append(f'Header: {key.strip()}: {value.strip()}')
+            
+            # Analyser le contenu
+            if payload:
+                if re.search(r'<!DOCTYPE html|<html|<body', payload, re.IGNORECASE):
+                    details.append('Content: HTML document')
+                elif re.search(r'application/json', str(headers), re.IGNORECASE):
+                    details.append('Content: JSON data')
+                elif re.search(r'application/xml', str(headers), re.IGNORECASE):
+                    details.append('Content: XML data')
+                else:
+                    details.append('Content: Raw data')
+        
+        elif protocol == 'dns':
+            # Analyser la requête/réponse DNS
+            for header in headers:
+                if re.match(r'Transaction ID: 0x[0-9a-f]{4}$', header):
+                    details.append(f'Transaction ID: {header.split(": ")[1]}')
+                elif re.match(r'Flags: .*$', header):
+                    details.append(f'Flags: {header.split(": ")[1]}')
+                elif re.match(r'Questions: \d+$', header):
+                    details.append(f'Questions: {header.split(": ")[1]}')
+                elif re.match(r'Answer RRs: \d+$', header):
+                    details.append(f'Answers: {header.split(": ")[1]}')
+            
+            # Analyser la requête
+            if payload:
+                match = re.search(r'(.*) IN (A|AAAA|CNAME|MX|TXT)$', payload)
+                if match:
+                    domain, record_type = match.groups()
+                    details.append(f'Query Type: {record_type} Record')
+                    details.append(f'Domain: {domain.strip(".")}')
+        
+        elif protocol == 'ftp':
+            # Analyser la commande/réponse FTP
+            for header in headers:
+                if re.match(r'^(USER|PASS|ACCT|CWD|CDUP|SMNT|QUIT|REIN|PORT|PASV|TYPE|STRU|MODE|RETR|STOR|STOU|APPE|ALLO|REST|RNFR|RNTO|ABOR|DELE|RMD|MKD|PWD|LIST|NLST|SITE|SYST|STAT|HELP|NOOP) .*$', header):
+                    command, *args = header.split(' ')
+                    details.append(f'Command: {command}')
+                    if args:
+                        details.append(f'Arguments: {" ".join(args)}')
+                elif re.match(r'^\d{3} .*$', header):
+                    code, message = header.split(' ', 1)
+                    details.append(f'Response: {code} {message}')
+        
+        elif protocol == 'smtp':
+            # Analyser la commande/réponse SMTP
+            for header in headers:
+                if re.match(r'^(HELO|EHLO|MAIL|RCPT|DATA|RSET|VRFY|EXPN|HELP|NOOP|QUIT) .*$', header):
+                    command, *args = header.split(' ')
+                    details.append(f'Command: {command}')
+                    if args:
+                        details.append(f'Arguments: {" ".join(args)}')
+                elif re.match(r'^\d{3} .*$', header):
+                    code, message = header.split(' ', 1)
+                    details.append(f'Response: {code} {message}')
+                elif ':' in header:
+                    key, value = header.split(':', 1)
+                    details.append(f'Header: {key.strip()}: {value.strip()}')
+        
+        elif protocol == 'ssh':
+            # Analyser le handshake SSH
+            for header in headers:
+                if re.match(r'^SSH-\d\.\d-.*$', header):
+                    details.append(f'Version: {header}')
+                elif 'key exchange' in header.lower():
+                    details.append('Phase: Key Exchange')
+                elif 'encryption' in header.lower():
+                    details.append('Phase: Encryption Setup')
+                elif 'authentication' in header.lower():
+                    details.append('Phase: Authentication')
+        
+        return details
+
+    def format_analysis(self, analysis):
+        """Formate l'analyse pour l'affichage."""
+        output = [f"ANALYSIS: {analysis['type']}"]
+        
+        # Ajouter les détails spécifiques au protocole
+        if analysis['type'] == 'HTTP':
+            output.append(f"Type: HTTP {'Request' if any('GET' in d or 'POST' in d for d in analysis['details']) else 'Response'}")
+        elif analysis['type'] == 'DNS':
+            output.append(f"Type: DNS {'Query' if any('Query Type' in d for d in analysis['details']) else 'Response'}")
+        elif analysis['type'] == 'FTP':
+            output.append(f"Type: FTP {'Command' if any('Command' in d for d in analysis['details']) else 'Response'}")
+        elif analysis['type'] == 'SMTP':
+            output.append(f"Type: SMTP {'Command' if any('Command' in d for d in analysis['details']) else 'Response'}")
+        elif analysis['type'] == 'SSH':
+            output.append("Type: SSH Handshake")
+        
+        # Ajouter les détails
+        output.append("Details:")
+        for detail in analysis['details']:
+            output.append(f"  {detail}")
+        
+        # Ajouter les anomalies si présentes
+        if analysis['anomalies']:
+            output.append("Anomalies:")
+            for anomaly in analysis['anomalies']:
+                output.append(f"  - {anomaly}")
+        else:
+            output.append("Anomalies: None")
+        
+        # Ajouter le niveau de confiance
+        output.append(f"Confidence: {analysis['confidence']}")
+        
+        return '\n'.join(output)
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9014))
+
+# Créer l'analyseur de protocoles
+analyzer = ProtocolAnalyzer()
+
+while True:
+    # Recevoir le paquet
+    packet = s.recv(4096).decode().strip()
+    if not packet:
+        break
+    
+    # Analyser le paquet
+    analysis = analyzer.analyze_packet(packet)
+    
+    if analysis:
+        # Envoyer l'analyse
+        response = analyzer.format_analysis(analysis)
+        s.send(response.encode())
+        
+        # Recevoir la confirmation
+        confirmation = s.recv(1024).decode()
+        print(confirmation)
+        
+        if "flag" in confirmation.lower():
+            break
+    else:
+        s.send(b"Invalid packet format")
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour analyser un protocole réseau, vous pouvez :
+                1. Extraire les informations de base :
+                   - Source et destination
+                   - Protocole et port
+                   - Taille et flags
+                2. Analyser les en-têtes :
+                   - Format spécifique au protocole
+                   - Champs obligatoires
+                   - Valeurs attendues
+                3. Analyser le payload :
+                   - Type de contenu
+                   - Structure des données
+                   - Anomalies potentielles
+                
+                N'oubliez pas de :
+                - Vérifier les patterns de protocole
+                - Détecter les anomalies
+                - Évaluer la confiance
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

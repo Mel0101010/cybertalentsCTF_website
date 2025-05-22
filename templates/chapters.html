@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitres - CTF Investigation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            color: #cc0000;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #aaa;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chapter-card {
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid #333;
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chapter-card:hover {
+            border-color: #cc0000;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.3);
+        }
+
+        .chapter-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+        }
+
+        .chapter-card.locked:hover {
+            border-color: #666;
+            box-shadow: none;
+        }
+
+        .chapter-card.completed {
+            border-color: #00aa00;
+        }
+
+        .chapter-card.completed:hover {
+            box-shadow: 0 0 20px rgba(0, 170, 0, 0.3);
+        }
+
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chapter-number {
+            background: #cc0000;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .chapter-card.locked .chapter-number {
+            background: #666;
+        }
+
+        .chapter-card.completed .chapter-number {
+            background: #00aa00;
+        }
+
+        .difficulty-badge {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .difficulty-facile {
+            background: #004400;
+            color: #00ff00;
+        }
+
+        .difficulty-moyen {
+            background: #444400;
+            color: #ffff00;
+        }
+
+        .difficulty-difficile {
+            background: #440000;
+            color: #ff0000;
+        }
+
+        .chapter-title {
+            color: #fff;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .chapter-card.locked .chapter-title {
+            color: #888;
+        }
+
+        .chapter-description {
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .chapter-card.locked .chapter-description {
+            color: #666;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            background: #333;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #cc0000, #ff0000);
+            transition: width 0.3s ease;
+        }
+
+        .chapter-card.completed .progress-fill {
+            background: linear-gradient(90deg, #00aa00, #00ff00);
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        .chapter-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-locked {
+            background: #333;
+            color: #888;
+        }
+
+        .status-available {
+            background: #cc0000;
+            color: white;
+        }
+
+        .status-completed {
+            background: #00aa00;
+            color: white;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: #666;
+            opacity: 0.3;
+        }
+
+        .chapter-card.locked .lock-icon {
+            display: block;
+        }
+
+        .chapter-card:not(.locked) .lock-icon {
+            display: none;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .nav-btn {
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+
+        .flash-message {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="header">
+            <h1>🕵️ Chapitres d'Investigation</h1>
+            <p>Sélectionnez un chapitre pour commencer votre enquête</p>
+        </div>
+
+        <div class="chapters-grid">
+            {% for chapter in chapters %}
+                {% set progress = user_progress[chapter.id] %}
+                {% set progress_percent = (progress.completed_missions / chapter.total_missions * 100) if chapter.total_missions > 0 else 0 %}
+                {% set is_completed = progress.completed_missions == chapter.total_missions %}
+                
+                <div class="chapter-card {% if not progress.unlocked %}locked{% elif is_completed %}completed{% endif %}"
+                     {% if progress.unlocked %}onclick="location.href='{{ url_for('mission', chapter_id=chapter.id, mission_id=1) }}'"{% endif %}>
+                    
+                    <div class="chapter-status {% if not progress.unlocked %}status-locked{% elif is_completed %}status-completed{% else %}status-available{% endif %}">
+                        {% if not progress.unlocked %}
+                            🔒 Verrouillé
+                        {% elif is_completed %}
+                            ✅ Terminé
+                        {% else %}
+                            🔥 Disponible
+                        {% endif %}
+                    </div>
+
+                    <div class="chapter-header">
+                        <div class="chapter-number">{{ chapter.id }}</div>
+                        <div class="difficulty-badge difficulty-{{ chapter.difficulty.lower() }}">
+                            {{ chapter.difficulty }}
+                        </div>
+                    </div>
+
+                    <h2 class="chapter-title">{{ chapter.title }}</h2>
+                    <p class="chapter-description">{{ chapter.description }}</p>
+
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ progress_percent }}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            Progression: {{ progress.completed_missions }}/{{ chapter.total_missions }} missions 
+                            ({{ "%.0f"|format(progress_percent) }}%)
+                        </div>
+                    </div>
+
+                    {% if not progress.unlocked %}
+                        <div class="lock-icon">🔒</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="navigation">
+            <a href="{{ url_for('home') }}" class="nav-btn">🏠 Accueil</a>
+            <a href="{{ url_for('scoreboard') }}" class="nav-btn">🏆 Classement</a>
+            {% if current_user.current_chapter > chapters|length %}
+                <a href="{{ url_for('victory') }}" class="nav-btn">🎉 Victoire</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

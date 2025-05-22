@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #13 - Analyse de Malware</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .malware-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .malware-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .malware-explanation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .malware-explanation li {
+            margin: 10px 0;
+        }
+
+        .sample-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .sample-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .sample-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .malware-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .malware-table th, .malware-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .malware-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .malware-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .sample-visual {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            text-align: center;
+        }
+
+        .sample-visual h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .sample-visual pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .malware-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .type-virus {
+            background: #cc0000;
+            color: #fff;
+        }
+
+        .type-worm {
+            background: #ff6600;
+            color: #fff;
+        }
+
+        .type-trojan {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .type-ransomware {
+            background: #990099;
+            color: #fff;
+        }
+
+        .type-backdoor {
+            background: #0066cc;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #13: Analyse de Malware</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui analyse des échantillons de malware. Le serveur vous enverra des fichiers suspects à analyser pour identifier leur type, leur comportement et leurs caractéristiques.</p>
+            <p>Votre programme devra extraire les informations importantes, détecter les patterns malveillants et générer un rapport d'analyse.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9013</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="malware-explanation">
+            <h3>📝 Types de Malware</h3>
+            <p>Les échantillons peuvent appartenir à différentes catégories :</p>
+            <ul>
+                <li>Virus : Se réplique en infectant d'autres fichiers</li>
+                <li>Vers : Se propage via le réseau</li>
+                <li>Trojans : Se fait passer pour un logiciel légitime</li>
+                <li>Ransomware : Chiffre les fichiers et demande une rançon</li>
+                <li>Backdoors : Permet un accès distant non autorisé</li>
+            </ul>
+        </div>
+
+        <div class="sample-visual">
+            <h3>🔍 Format des Échantillons</h3>
+            <pre>
+[2024-02-20 10:15:23] [SAMPLE] [ANALYSIS]
+Name: suspicious.exe
+Size: 245760 bytes
+Type: PE32
+MD5: d41d8cd98f00b204e9800998ecf8427e
+SHA1: da39a3ee5e6b4b0d3255bfef95601890afd80709
+SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+[STRINGS]
+C:\Windows\System32\cmd.exe
+powershell.exe -enc
+net user /add
+net localgroup administrators
+download.exe
+http://malicious.com/payload
+
+[BEHAVIOR]
+- Creates registry key: HKCU\Software\Malware
+- Creates file: %TEMP%\backdoor.exe
+- Connects to: 192.168.1.100:4444
+- Downloads: http://malicious.com/payload
+            </pre>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "[2024-02-20 10:15:23] [SAMPLE] [ANALYSIS]
+Name: suspicious.exe
+Size: 245760 bytes
+Type: PE32
+MD5: d41d8cd98f00b204e9800998ecf8427e
+SHA1: da39a3ee5e6b4b0d3255bfef95601890afd80709
+SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+[STRINGS]
+C:\Windows\System32\cmd.exe
+powershell.exe -enc
+net user /add
+net localgroup administrators
+download.exe
+http://malicious.com/payload
+
+[BEHAVIOR]
+- Creates registry key: HKCU\Software\Malware
+- Creates file: %TEMP%\backdoor.exe
+- Connects to: 192.168.1.100:4444
+- Downloads: http://malicious.com/payload"
+
+Client  : "ANALYSIS: BACKDOOR
+Type: Backdoor
+Name: suspicious.exe
+Size: 245760 bytes
+Hashes:
+  MD5: d41d8cd98f00b204e9800998ecf8427e
+  SHA1: da39a3ee5e6b4b0d3255bfef95601890afd80709
+  SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Indicators:
+  - Creates backdoor executable
+  - Attempts privilege escalation
+  - Downloads remote payload
+  - Connects to C2 server
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: MALWARE_ANALYZED"
+
+Serveur : "[2024-02-20 11:30:15] [SAMPLE] [ANALYSIS]
+Name: document.doc
+Size: 1536000 bytes
+Type: OLE
+MD5: 7c4a8d09ca3762af61e59520943dc26494f8941b
+SHA1: 40bd001563085fc35165329ea1ff5c5ecbdbbeef
+SHA256: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+
+[STRINGS]
+VBA
+AutoOpen
+Shell
+powershell.exe
+certutil.exe -urlcache -split -f
+http://malicious.com/macro
+
+[BEHAVIOR]
+- Contains VBA macro
+- Executes on document open
+- Downloads and executes payload
+- Attempts persistence"
+
+Client  : "ANALYSIS: TROJAN
+Type: Trojan
+Name: document.doc
+Size: 1536000 bytes
+Hashes:
+  MD5: 7c4a8d09ca3762af61e59520943dc26494f8941b
+  SHA1: 40bd001563085fc35165329ea1ff5c5ecbdbbeef
+  SHA256: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+Indicators:
+  - Contains malicious macro
+  - Auto-executes on open
+  - Downloads remote payload
+  - Attempts persistence
+Confidence: HIGH"
+
+Serveur : "Correct! Voici le flag: MALWARE_ANALYZED"
+            </pre>
+        </div>
+
+        <table class="malware-table">
+            <tr>
+                <th>Type</th>
+                <th>Caractéristiques</th>
+                <th>Indicateurs</th>
+                <th>Impact</th>
+            </tr>
+            <tr>
+                <td><span class="malware-type type-virus">Virus</span></td>
+                <td>Auto-réplication</td>
+                <td>Modification de fichiers, signatures</td>
+                <td>Corruption de données</td>
+            </tr>
+            <tr>
+                <td><span class="malware-type type-worm">Vers</span></td>
+                <td>Propagation réseau</td>
+                <td>Scans réseau, exploits</td>
+                <td>Surcharge réseau</td>
+            </tr>
+            <tr>
+                <td><span class="malware-type type-trojan">Trojans</span></td>
+                <td>Déguisement</td>
+                <td>Macros, téléchargements</td>
+                <td>Vol de données</td>
+            </tr>
+            <tr>
+                <td><span class="malware-type type-ransomware">Ransomware</span></td>
+                <td>Chiffrement</td>
+                <td>Cryptographie, rançon</td>
+                <td>Perte de données</td>
+            </tr>
+            <tr>
+                <td><span class="malware-type type-backdoor">Backdoors</span></td>
+                <td>Accès distant</td>
+                <td>Ports ouverts, C2</td>
+                <td>Contrôle système</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import re
+import hashlib
+from datetime import datetime
+
+class MalwareAnalyzer:
+    def __init__(self):
+        self.malware_patterns = {
+            'backdoor': [
+                r'backdoor\.exe',
+                r'net user /add',
+                r'net localgroup administrators',
+                r'powershell\.exe -enc',
+                r'http://.*/payload'
+            ],
+            'trojan': [
+                r'VBA',
+                r'AutoOpen',
+                r'Shell',
+                r'certutil\.exe',
+                r'http://.*/macro'
+            ],
+            'ransomware': [
+                r'encrypt',
+                r'decrypt',
+                r'ransom',
+                r'bitcoin',
+                r'\.encrypted'
+            ],
+            'worm': [
+                r'exploit',
+                r'vulnerability',
+                r'scan',
+                r'port',
+                r'network'
+            ]
+        }
+        
+        self.suspicious_commands = {
+            'system': [
+                'cmd.exe', 'powershell.exe', 'certutil.exe',
+                'net.exe', 'reg.exe', 'schtasks.exe'
+            ],
+            'network': [
+                'download', 'upload', 'connect', 'socket',
+                'http://', 'https://', 'ftp://'
+            ],
+            'persistence': [
+                'HKCU\\', 'HKLM\\', 'Startup', 'Task',
+                'Service', 'Scheduled'
+            ]
+        }
+
+    def calculate_hashes(self, content):
+        """Calcule les hashes MD5, SHA1 et SHA256 du contenu."""
+        return {
+            'MD5': hashlib.md5(content).hexdigest(),
+            'SHA1': hashlib.sha1(content).hexdigest(),
+            'SHA256': hashlib.sha256(content).hexdigest()
+        }
+
+    def extract_strings(self, content):
+        """Extrait les chaînes de caractères du contenu."""
+        # Convertir le contenu en texte
+        try:
+            text = content.decode('utf-8', errors='ignore')
+        except:
+            text = str(content)
+        
+        # Extraire les chaînes non-ASCII
+        strings = re.findall(r'[ -~]{4,}', text)
+        return [s for s in strings if any(c.isprintable() for c in s)]
+
+    def analyze_behavior(self, strings):
+        """Analyse le comportement basé sur les chaînes extraites."""
+        behavior = {
+            'system_commands': [],
+            'network_activity': [],
+            'persistence': [],
+            'suspicious_patterns': []
+        }
+        
+        for s in strings:
+            # Vérifier les commandes système
+            for cmd in self.suspicious_commands['system']:
+                if cmd.lower() in s.lower():
+                    behavior['system_commands'].append(s)
+            
+            # Vérifier l'activité réseau
+            for net in self.suspicious_commands['network']:
+                if net.lower() in s.lower():
+                    behavior['network_activity'].append(s)
+            
+            # Vérifier la persistance
+            for pers in self.suspicious_commands['persistence']:
+                if pers.lower() in s.lower():
+                    behavior['persistence'].append(s)
+            
+            # Vérifier les patterns malveillants
+            for malware_type, patterns in self.malware_patterns.items():
+                for pattern in patterns:
+                    if re.search(pattern, s, re.IGNORECASE):
+                        behavior['suspicious_patterns'].append((malware_type, s))
+        
+        return behavior
+
+    def determine_type(self, behavior):
+        """Détermine le type de malware basé sur le comportement."""
+        type_scores = {
+            'backdoor': 0,
+            'trojan': 0,
+            'ransomware': 0,
+            'worm': 0
+        }
+        
+        # Analyser les patterns suspects
+        for malware_type, _ in behavior['suspicious_patterns']:
+            type_scores[malware_type] += 1
+        
+        # Analyser les commandes système
+        if behavior['system_commands']:
+            type_scores['backdoor'] += 1
+            type_scores['trojan'] += 1
+        
+        # Analyser l'activité réseau
+        if behavior['network_activity']:
+            type_scores['worm'] += 1
+            type_scores['backdoor'] += 1
+        
+        # Analyser la persistance
+        if behavior['persistence']:
+            type_scores['trojan'] += 1
+            type_scores['backdoor'] += 1
+        
+        # Déterminer le type avec le score le plus élevé
+        max_score = max(type_scores.values())
+        if max_score == 0:
+            return 'Unknown'
+        
+        return max(type_scores.items(), key=lambda x: x[1])[0]
+
+    def analyze_sample(self, sample_data):
+        """Analyse un échantillon de malware et génère un rapport."""
+        # Extraire les informations de base
+        name_match = re.search(r'Name: (.*)', sample_data)
+        size_match = re.search(r'Size: (\d+) bytes', sample_data)
+        type_match = re.search(r'Type: (.*)', sample_data)
+        
+        if not all([name_match, size_match, type_match]):
+            return None
+        
+        name = name_match.group(1)
+        size = int(size_match.group(1))
+        file_type = type_match.group(1)
+        
+        # Extraire les hashes
+        md5_match = re.search(r'MD5: (.*)', sample_data)
+        sha1_match = re.search(r'SHA1: (.*)', sample_data)
+        sha256_match = re.search(r'SHA256: (.*)', sample_data)
+        
+        hashes = {
+            'MD5': md5_match.group(1) if md5_match else None,
+            'SHA1': sha1_match.group(1) if sha1_match else None,
+            'SHA256': sha256_match.group(1) if sha256_match else None
+        }
+        
+        # Extraire les chaînes
+        strings_section = re.search(r'\[STRINGS\](.*?)(?=\[|$)', sample_data, re.DOTALL)
+        if strings_section:
+            strings = [s.strip() for s in strings_section.group(1).split('\n') if s.strip()]
+        else:
+            strings = []
+        
+        # Analyser le comportement
+        behavior = self.analyze_behavior(strings)
+        malware_type = self.determine_type(behavior)
+        
+        # Générer les indicateurs
+        indicators = []
+        if behavior['system_commands']:
+            indicators.append('- Executes system commands')
+        if behavior['network_activity']:
+            indicators.append('- Performs network activity')
+        if behavior['persistence']:
+            indicators.append('- Attempts persistence')
+        if behavior['suspicious_patterns']:
+            indicators.append('- Contains malicious patterns')
+        
+        # Déterminer le niveau de confiance
+        confidence = 'HIGH' if len(indicators) >= 3 else 'MEDIUM' if len(indicators) >= 2 else 'LOW'
+        
+        return {
+            'type': malware_type.upper(),
+            'name': name,
+            'size': size,
+            'hashes': hashes,
+            'indicators': indicators,
+            'confidence': confidence
+        }
+
+    def format_analysis(self, analysis):
+        """Formate l'analyse pour l'affichage."""
+        return f"""ANALYSIS: {analysis['type']}
+Type: {analysis['type']}
+Name: {analysis['name']}
+Size: {analysis['size']} bytes
+Hashes:
+  MD5: {analysis['hashes']['MD5']}
+  SHA1: {analysis['hashes']['SHA1']}
+  SHA256: {analysis['hashes']['SHA256']}
+Indicators:
+{chr(10).join('  ' + i for i in analysis['indicators'])}
+Confidence: {analysis['confidence']}"""
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9013))
+
+# Créer l'analyseur de malware
+analyzer = MalwareAnalyzer()
+
+while True:
+    # Recevoir l'échantillon
+    sample = s.recv(4096).decode().strip()
+    if not sample:
+        break
+    
+    # Analyser l'échantillon
+    analysis = analyzer.analyze_sample(sample)
+    
+    if analysis:
+        # Envoyer l'analyse
+        response = analyzer.format_analysis(analysis)
+        s.send(response.encode())
+        
+        # Recevoir la confirmation
+        confirmation = s.recv(1024).decode()
+        print(confirmation)
+        
+        if "flag" in confirmation.lower():
+            break
+    else:
+        s.send(b"Invalid sample format")
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour analyser un malware, vous pouvez :
+                1. Extraire les informations de base :
+                   - Nom, taille, type de fichier
+                   - Hashes (MD5, SHA1, SHA256)
+                   - Chaînes de caractères
+                2. Analyser le comportement :
+                   - Commandes système
+                   - Activité réseau
+                   - Tentatives de persistance
+                   - Patterns suspects
+                3. Classifier le malware :
+                   - Déterminer le type
+                   - Évaluer la dangerosité
+                   - Générer des indicateurs
+                
+                N'oubliez pas de :
+                - Vérifier les patterns connus
+                - Analyser les comportements
+                - Évaluer la confiance
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

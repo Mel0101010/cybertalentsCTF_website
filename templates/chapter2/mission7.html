@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #7 - Déchiffrement de César</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            margin-bottom: 30px;
+        }
+
+        .mission-brief h2 {
+            color: #cc0000;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-brief p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .server-info h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+        }
+
+        .code-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .code-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .help-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            background: #444;
+        }
+
+        .submit-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            font-size: 1.1em;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+
+        .flash-message.success {
+            background: #004400;
+            color: #ffffff;
+            border-left: 4px solid #00aa00;
+        }
+
+        .flash-message.error {
+            background: #440000;
+            color: #ffffff;
+            border-left: 4px solid #aa0000;
+        }
+
+        .example-interaction {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .example-interaction h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .example-interaction pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .caesar-explanation {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .caesar-explanation h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .caesar-explanation ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .caesar-explanation li {
+            margin: 10px 0;
+        }
+
+        .caesar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .caesar-table th, .caesar-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .caesar-table th {
+            background: #333;
+            color: #cc0000;
+        }
+
+        .caesar-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        .caesar-example {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .caesar-example h3 {
+            color: #cc0000;
+            margin-top: 0;
+        }
+
+        .caesar-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .alphabet-wheel {
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .alphabet-wheel pre {
+            margin: 0;
+            white-space: pre;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #7: Le Chiffrement de César</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Dans cette mission, vous devez créer un programme qui déchiffre des messages codés avec le chiffrement de César. Ce chiffrement remplace chaque lettre par une autre lettre de l'alphabet, décalée d'un certain nombre de positions.</p>
+            <p>Votre programme devra trouver le décalage utilisé et déchiffrer le message.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>📡 Informations du Serveur</h3>
+            <p>IP : ?.?.?.?</p>
+            <p>Port : 9007</p>
+            <p>Protocole : TCP</p>
+        </div>
+
+        <div class="caesar-explanation">
+            <h3>📝 Comment fonctionne le chiffrement de César ?</h3>
+            <p>Le chiffrement de César est une méthode de chiffrement par substitution où chaque lettre du texte est remplacée par une lettre à un nombre fixe de positions plus loin dans l'alphabet.</p>
+            <p>Par exemple, avec un décalage de 3 :</p>
+            <ol>
+                <li>A devient D</li>
+                <li>B devient E</li>
+                <li>C devient F</li>
+                <li>...</li>
+                <li>X devient A</li>
+                <li>Y devient B</li>
+                <li>Z devient C</li>
+            </ol>
+            <p>Pour déchiffrer, on fait le décalage dans l'autre sens.</p>
+        </div>
+
+        <div class="alphabet-wheel">
+            <h3>🔤 Roue de l'Alphabet</h3>
+            <pre>
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+D E F G H I J K L M N O P Q R S T U V W X Y Z A B C
+            </pre>
+            <p>Exemple avec un décalage de 3</p>
+        </div>
+
+        <div class="example-interaction">
+            <h3>💡 Exemple d'Interaction</h3>
+            <pre>
+Serveur : "KHOOR ZRUOG"
+Client  : "HELLO WORLD"
+Serveur : "Correct! Voici le flag: CAESAR_DECODED"
+
+Serveur : "QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD"
+Client  : "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG"
+Serveur : "Correct! Voici le flag: CAESAR_DECODED"
+            </pre>
+        </div>
+
+        <table class="caesar-table">
+            <tr>
+                <th>Texte Original</th>
+                <th>Décalage</th>
+                <th>Texte Chiffré</th>
+            </tr>
+            <tr>
+                <td>HELLO</td>
+                <td>3</td>
+                <td>KHOOR</td>
+            </tr>
+            <tr>
+                <td>WORLD</td>
+                <td>3</td>
+                <td>ZRUOG</td>
+            </tr>
+            <tr>
+                <td>PYTHON</td>
+                <td>13</td>
+                <td>CLGUBA</td>
+            </tr>
+            <tr>
+                <td>PROGRAMMING</td>
+                <td>7</td>
+                <td>WYVNYHTTUPUN</td>
+            </tr>
+            <tr>
+                <td>CYBERSECURITY</td>
+                <td>25</td>
+                <td>BXADQRDBVSTQSX</td>
+            </tr>
+        </table>
+
+        <div class="code-example">
+            <h3>💻 Exemple de Code Python</h3>
+            <pre>
+import socket
+import string
+
+def caesar_decrypt(text, shift):
+    # Créer les tables de traduction
+    alphabet = string.ascii_uppercase
+    shifted = alphabet[shift:] + alphabet[:shift]
+    table = str.maketrans(shifted, alphabet)
+    
+    # Déchiffrer le texte
+    return text.translate(table)
+
+def find_shift(text):
+    # Essayer tous les décalages possibles
+    for shift in range(26):
+        decrypted = caesar_decrypt(text, shift)
+        # Vérifier si le texte déchiffré a du sens
+        # (par exemple, contient des mots courants)
+        if "THE" in decrypted or "AND" in decrypted:
+            return shift, decrypted
+    return None, None
+
+# Créer un socket TCP
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se connecter au serveur
+s.connect(('IP_DU_SERVEUR', 9007))
+
+# Recevoir le texte chiffré
+data = s.recv(1024).decode().strip()
+
+# Trouver le décalage et déchiffrer
+shift, decrypted = find_shift(data)
+if decrypted:
+    # Envoyer le texte déchiffré
+    s.send(decrypted.encode())
+    
+    # Recevoir la réponse finale
+    response = s.recv(1024)
+    print(response.decode())
+
+# Fermer la connexion
+s.close()
+            </pre>
+        </div>
+
+        <div class="help-section">
+            <a href="javascript:void(0);" class="help-btn" onclick="showHint()">Besoin d'un indice ?</a>
+            <p id="hint" style="display: none; background: #2a2a2a; padding: 10px; margin-top: 10px;">
+                Indice : Pour déchiffrer un message, vous pouvez :
+                1. Essayer tous les décalages possibles (0-25)
+                2. Pour chaque décalage :
+                   - Créer une table de traduction
+                   - Appliquer la traduction au texte
+                   - Vérifier si le résultat a du sens
+                3. Pour vérifier si le texte a du sens, cherchez :
+                   - Des mots courants (THE, AND, IS, etc.)
+                   - Des patterns de lettres fréquents
+                   - Des espaces aux bons endroits
+                
+                N'oubliez pas de :
+                - Gérer les majuscules/minuscules
+                - Préserver les espaces et la ponctuation
+                - Vérifier plusieurs mots pour confirmer le décalage
+            </p>
+        </div>
+
+        <form method="POST" class="submit-form">
+            <input type="text" name="answer" class="submit-input" placeholder="Entrez le flag obtenu..." required>
+            <br>
+            <button type="submit" class="submit-btn">SOUMETTRE LA RÉPONSE</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        function showHint() {
+            var hint = document.getElementById('hint');
+            hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html> 

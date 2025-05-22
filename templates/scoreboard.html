@@ -199,7 +199,7 @@
                         {{ loop.index }}
                     </td>
                     <td class="username">{{ user.username }}</td>
-                    <td class="mission-count">{{ user.completed_missions|length }}/7</td>
+                    <td class="mission-count">{{ user.completed_missions|length }}/8</td>
                     <td class="points">{{ user.total_points }}</td>
                 </tr>
                 {% endfor %}
@@ -209,7 +209,7 @@
         <div class="navigation">
             <a href="{{ url_for('home') }}" class="nav-btn">Retour au Dossier</a>
             {% if current_user.is_authenticated %}
-                {% if current_user.current_mission <= 7 %}
+                {% if current_user.current_mission <= 8 %}
                     <a href="{{ url_for('mission' ~ current_user.current_mission) }}" class="nav-btn primary">Continuer l'Enquête</a>
                 {% else %}
                     <a href="{{ url_for('victory') }}" class="nav-btn primary">Voir Résultats</a>

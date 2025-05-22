@@ -256,8 +256,8 @@
             <div class="user-details">
                 <div class="user-name">Agent {{ current_user.username }}</div>
                 <div class="user-progress">
-                    {% if current_user.current_mission <= 7 %}
-                        Mission actuelle: {{ current_user.current_mission }}/7
+                    {% if current_user.current_mission <= 8 %}
+                        Mission actuelle: {{ current_user.current_mission }}/8
                     {% else %}
                         Toutes les missions terminées ✓
                     {% endif %}
@@ -271,6 +271,44 @@
             <p>Un dangereux criminel est en liberté dans la ville. Les indices suggèrent qu'il prépare son prochain coup. Le temps presse, nous avons besoin de vos compétences d'investigation pour le retrouver avant qu'il ne frappe à nouveau.</p>
         </div>
 
+        {% if current_user.is_authenticated %}
+        <div style="margin: 30px 0;">
+            <h2>Choisissez votre dossier :</h2>
+            <div style="display: flex; gap: 30px; justify-content: center;">
+                {# Chapitre 1 #}
+                {% set progress1 = current_user.get_chapter_progress(1) %}
+                <div style="background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; min-width: 220px;">
+                    <h3 style="color: #cc0000; margin-top: 0;">Chapitre 1 : {{ chapters[0].title }}</h3>
+                    <div style="color: #aaa; font-size: 0.95em; margin-bottom: 10px;">{{ chapters[0].description }}</div>
+                    <div style="margin-bottom: 10px;">Difficulté : <b>{{ chapters[0].difficulty }}</b></div>
+                    <div style="margin-bottom: 10px;">Progression : {{ progress1 }}/{{ chapters[0].total_missions }} missions</div>
+                    {% if progress1 < chapters[0].total_missions %}
+                        <a href="{{ url_for('mission', chapter_id=1, mission_id=progress1+1) }}" class="start-investigation">{{ 'Continuer Chapitre 1' if progress1 > 0 else 'Commencer Chapitre 1' }}</a>
+                    {% else %}
+                        <span style="color: #00cc00; font-weight: bold;">Chapitre terminé ✓</span>
+                    {% endif %}
+                </div>
+                {# Chapitre 2 #}
+                {% set progress2 = current_user.get_chapter_progress(2) %}
+                <div style="background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; min-width: 220px;">
+                    <h3 style="color: #cc0000; margin-top: 0;">Chapitre 2 : {{ chapters[1].title }}</h3>
+                    <div style="color: #aaa; font-size: 0.95em; margin-bottom: 10px;">{{ chapters[1].description }}</div>
+                    <div style="margin-bottom: 10px;">Difficulté : <b>{{ chapters[1].difficulty }}</b></div>
+                    <div style="margin-bottom: 10px;">Progression : {{ progress2 }}/{{ chapters[1].total_missions }} missions</div>
+                    {% if current_user.is_chapter_unlocked(2) %}
+                        {% if progress2 < chapters[1].total_missions %}
+                            <a href="{{ url_for('mission', chapter_id=2, mission_id=progress2+1) }}" class="start-investigation">{{ 'Continuer Chapitre 2' if progress2 > 0 else 'Commencer Chapitre 2' }}</a>
+                        {% else %}
+                            <span style="color: #00cc00; font-weight: bold;">Chapitre terminé ✓</span>
+                        {% endif %}
+                    {% else %}
+                        <button class="start-investigation" style="background: #555; cursor: not-allowed;" disabled>Chapitre 2 verrouillé</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="police-tape"></div>
 
         <h2>Éléments à votre disposition :</h2>
@@ -283,7 +321,7 @@
         </ul>
 
         {% if current_user.is_authenticated %}
-            {% if current_user.current_mission <= 7 %}
+            {% if current_user.current_mission <= 8 %}
                 <a href="{{ url_for('mission' ~ current_user.current_mission) }}" class="start-investigation">
                     {% if current_user.current_mission > 1 %}
                         CONTINUER L'ENQUÊTE (Mission {{ current_user.current_mission }})

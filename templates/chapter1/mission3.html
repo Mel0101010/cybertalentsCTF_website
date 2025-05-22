@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #3 - Investigation Web</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .target-info {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #00ff00;
+            font-family: monospace;
+        }
+
+        .flag-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: monospace;
+        }
+
+        .submit-btn {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .objective-box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ffff00;
+        }
+
+        .important-note {
+            background: #440000;
+            color: #fff;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #3: Investigation Web</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Agent, nous avons identifié un réseau social suspect utilisé par notre cible. Une investigation approfondie de ce site pourrait révéler des informations cruciales sur ses activités.</p>
+        </div>
+
+        <div class="target-info">
+            <h3>🎯 Cible</h3>
+            <p>URL du site : <strong>http://192.168.1.1</strong></p>
+            <p>Une page de connexion a été détectée. L'accès aux conversations pourrait révéler des informations vitales pour l'enquête.</p>
+        </div>
+
+        <div class="objective-box">
+            <h3>🎯 Objectif</h3>
+            <p>Accéder aux conversations privées du suspect en exploitant les vulnérabilités du système d'authentification.</p>
+        </div>
+
+        <div class="important-note">
+            <h3>⚠️ Note Importante</h3>
+            <p>Cette investigation est encadrée par une autorisation judiciaire. Limitez vos actions au périmètre défini.</p>
+        </div>
+
+        <div class="flag-form">
+            <h3>🚩 Validation</h3>
+            <p>Une fois l'accès obtenu, entrez le flag découvert pour valider la mission :</p>
+            <form method="POST">
+                <input type="text" name="flag" class="input-field" placeholder="Entrez le flag..." required>
+                <button type="submit" class="submit-btn">Valider le flag</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission #5 - Reverse Engineering</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Special Elite', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url("{{ url_for('static', filename='images/police-background.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .mission-file {
+            background: rgba(20, 20, 20, 0.95);
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .mission-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #cc0000;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mission-status {
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .mission-brief {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #cc0000;
+        }
+
+        .file-info {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #00ff00;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .steps-container {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .step-box {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .tool-box {
+            background: #0a0a0a;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Source Code Pro', monospace;
+            border-radius: 5px;
+        }
+
+        .command-line {
+            color: #00ff00;
+            padding: 10px;
+            background: #1a1a1a;
+            margin: 5px 0;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .flag-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .submit-btn {
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #990000;
+            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+        }
+
+        .hint-box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="mission-file">
+        <div class="mission-header">
+            <h1>Mission #5: Reverse Engineering</h1>
+            <div class="mission-status">STATUT: EN COURS</div>
+        </div>
+
+        <div class="mission-brief">
+            <h2>📋 Briefing de Mission</h2>
+            <p>Agent, vous avez réussi à récupérer le fichier 'random.pyc'. Ce fichier compilé en Python contient probablement des informations cruciales pour notre enquête. Votre mission est de décompiler ce fichier et d'extraire le flag caché.</p>
+        </div>
+
+        <div class="file-info">
+            <h3>📁 Informations sur le Fichier</h3>
+            <p>Nom : random.pyc</p>
+            <p>Type : Fichier Python compilé</p>
+            <p>Objectif : Décompilation et analyse du code</p>
+        </div>
+
+
+        <div class="hint-box">
+            <h3>💡 Conseil</h3>
+            <p>Le flag est probablement masqué ou encodé dans le code source. Recherchez des motifs comme 'FLAG{...}' ou des variables contenant des chaînes suspectes.</p>
+        </div>
+
+        <div class="flag-form">
+            <h3>🚩 Validation</h3>
+            <p>Entrez le flag trouvé dans le fichier décompilé :</p>
+            <form method="POST">
+                <input type="text" name="flag" class="input-field" placeholder="FLAG{...}" required>
+                <button type="submit" class="submit-btn">Valider le flag</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
